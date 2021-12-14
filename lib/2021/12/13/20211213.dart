@@ -11,10 +11,19 @@ class Screen20211213 extends StatefulWidget {
 
 class _Screen20211213State extends State<Screen20211213>
     with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
   bool _isOn = false;
 
   final _onLightSvg = "assets/svg/light_on.svg";
   final _offLightSvg = "assets/svg/light_off.svg";
+
+  final double _defaultRadius = 45;
+  double _radius = 45;
+  final double _defaultWidth = 3;
+  double _width = 3;
+  final double _defaultOpacity = 1;
+  double _opacity = 1;
 
   late String _lightSvg;
 
@@ -22,36 +31,44 @@ class _Screen20211213State extends State<Screen20211213>
   void initState() {
     super.initState();
     _lightSvg = _offLightSvg;
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _controller.addListener(() {
+      setState(() {
+        _radius = _defaultRadius + _controller.value * 500;
+        _width = _defaultWidth + _controller.value * 3;
+        _opacity = _defaultOpacity - _controller.value;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1F2729),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.menu,
-          ),
-        ),
-      ),
       body: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
-          const SizedBox.expand(),
-          Center(
-            child: Transform.rotate(
-              angle: math.pi,
-              child: Transform.translate(
-                offset: const Offset(0, 90),
-                child: SvgPicture.asset(
-                  _lightSvg,
-                  width: 200,
-                  height: 200,
-                ),
+          const Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 50,
+                left: 30,
+              ),
+              child: Icon(
+                Icons.menu,
+                size: 30,
+                color: Colors.white,
               ),
             ),
           ),
@@ -65,31 +82,72 @@ class _Screen20211213State extends State<Screen20211213>
                   setState(() {
                     _isOn = true;
                     _lightSvg = _onLightSvg;
+                    _controller.repeat();
                   });
                 },
                 onTapUp: (details) {
                   setState(() {
                     _isOn = false;
                     _lightSvg = _offLightSvg;
+                    _controller.reset();
                   });
                 },
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     CircleWidget(
-                      radius: 20,
+                      radius: 30,
                       width: 2,
                       color: Colors.white,
                       isOn: _isOn,
                     ),
                     CircleWidget(
-                      radius: 30,
-                      width: 3,
+                      radius: _defaultRadius,
+                      width: 4,
                       color: Colors.yellow,
-                      isOn: false,
+                    ),
+                    AnimatedOpacity(
+                      opacity: _opacity,
+                      duration: const Duration(milliseconds: 0),
+                      child: CircleWidget(
+                        radius: _radius,
+                        width: _width,
+                        color: Colors.yellowAccent,
+                      ),
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+          CustomPaint(
+            painter: BulbLine(
+              anchorPoint: Offset(MediaQuery.of(context).size.width / 2, 0.0),
+              bulbPoint: Offset(MediaQuery.of(context).size.width / 2, 170.0),
+            ),
+          ),
+          Center(
+            child: Transform.translate(
+              offset: const Offset(0, 150),
+              child: Column(
+                children: [
+                  Transform.rotate(
+                    angle: math.pi,
+                    child: SvgPicture.asset(
+                      _lightSvg,
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  const Text(
+                    "Bedroom - Light",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  )
+                ],
               ),
             ),
           ),
@@ -105,7 +163,7 @@ class CircleWidget extends StatelessWidget {
     required this.radius,
     required this.width,
     required this.color,
-    required this.isOn,
+    this.isOn = false,
   }) : super(key: key);
 
   final double radius;
@@ -132,32 +190,27 @@ class CircleWidget extends StatelessWidget {
   }
 }
 
-class Circle extends CustomPainter {
-  final double strokeWidth;
-  final Color strokeColor;
-  final double radius;
-  final Offset center;
-  final bool isFilled;
+class BulbLine extends CustomPainter {
+  final Offset anchorPoint;
+  final Offset bulbPoint;
 
-  const Circle(
-      {required this.strokeWidth,
-      required this.strokeColor,
-      required this.radius,
-      this.center = const Offset(0.5, -0.5),
-      required this.isFilled});
+  final linePaint = Paint()
+    ..color = Colors.white
+    ..strokeWidth = 2
+    ..style = PaintingStyle.stroke;
+
+  BulbLine({
+    required this.anchorPoint,
+    required this.bulbPoint,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final strokePaint = Paint()
-      ..strokeWidth = strokeWidth
-      ..color = strokeColor
-      ..style = isFilled ? PaintingStyle.fill : PaintingStyle.stroke;
-
-    canvas.drawCircle(center, radius, strokePaint);
+    canvas.drawLine(anchorPoint, bulbPoint, linePaint);
   }
 
   @override
-  bool shouldRepaint(covariant Circle oldDelegate) {
-    return oldDelegate.isFilled != isFilled;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
