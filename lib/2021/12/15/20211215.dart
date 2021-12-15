@@ -9,6 +9,16 @@ class Screen20211215 extends StatefulWidget {
 
 class _Screen20211215State extends State<Screen20211215>
     with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,41 +28,57 @@ class _Screen20211215State extends State<Screen20211215>
         foregroundColor: Colors.black,
       ),
       body: Center(
-        child: Container(
-          height: 400,
-          width: 300,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(.2),
-                blurRadius: 12,
-                spreadRadius: 2,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 400,
+              width: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(.2),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Container(
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(.2),
-                  blurRadius: 3,
-                  spreadRadius: 1,
+              child: Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(.2),
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                    ),
+                  ],
                 ),
-              ],
+                child: Stack(
+                  children: [
+                    const _WindowBackgroundWidget(),
+                    const _WindowBlindWidget(),
+                    CustomPaint(
+                      painter: BlindLinePainter(
+                        startPosition: Offset(0, 0.0),
+                        stopPosition: Offset(0, 50.0),
+                      ),
+                    ),
+                    const _WindowBlindHeaderWidget(),
+                  ],
+                ),
+              ),
             ),
-            child: Stack(
-              children: [
-                const _WindowBackgroundWidget(),
-                const _WindowBlindWidget(),
-                const _WindowBlindHeaderWidget(),
-              ],
-            ),
-          ),
+            const SizedBox(height: 12),
+            Slider(
+              value: 0,
+              onChanged: (double newValue) {},
+            )
+          ],
         ),
       ),
     );
@@ -131,8 +157,8 @@ class _WindowBlindWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(
         top: 35,
-        left: 12,
-        right: 12,
+        left: 14,
+        right: 14,
       ),
       height: 22,
       decoration: BoxDecoration(
@@ -140,7 +166,8 @@ class _WindowBlindWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.2),
+            color: Colors.black.withOpacity(.4),
+            offset: const Offset(1, 1),
             blurRadius: 20,
           ),
         ],
@@ -162,5 +189,38 @@ class _WindowBlindWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class BlindLinePainter extends CustomPainter {
+  final Offset startPosition;
+  final Offset stopPosition;
+  final Color color;
+
+  BlindLinePainter({
+    required this.startPosition,
+    required this.stopPosition,
+    this.color = Colors.grey,
+  });
+
+  final Paint linePaint = Paint()
+    ..strokeWidth = 2
+    ..style = PaintingStyle.stroke;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    linePaint.color = color;
+
+    canvas.drawLine(
+      startPosition,
+      stopPosition,
+      linePaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant BlindLinePainter oldDelegate) {
+    return startPosition != oldDelegate.startPosition ||
+        stopPosition != oldDelegate.stopPosition;
   }
 }
