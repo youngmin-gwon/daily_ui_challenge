@@ -58,17 +58,22 @@ class _Screen20211213State extends State<Screen20211213>
       body: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
-          const Align(
+          Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 top: 50,
                 left: 30,
               ),
-              child: Icon(
-                Icons.menu,
-                size: 30,
-                color: Colors.white,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.navigate_before,
+                  size: 30,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
