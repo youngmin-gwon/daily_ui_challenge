@@ -1,4 +1,5 @@
 import 'package:daily_ui/2021/12/13/20211213.dart';
+import 'package:daily_ui/2021/12/15/20211215.dart';
 import 'package:flutter/material.dart';
 
 class BoardScreen202112 extends StatelessWidget {
@@ -22,7 +23,20 @@ class BoardScreen202112 extends StatelessWidget {
                   );
                 },
                 child: const Text(
-                  "13",
+                  "13~14",
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const Screen20211215(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "15",
                 ),
               ),
             ],
