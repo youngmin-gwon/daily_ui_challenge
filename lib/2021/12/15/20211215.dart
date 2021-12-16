@@ -11,12 +11,20 @@ class _Screen20211215State extends State<Screen20211215>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
+  final GlobalKey _key = GlobalKey();
+  Offset _offset = Offset(0, 0);
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
     );
+  }
+
+  void _getCanvasOffsetFromWidget() {
+    final myBox = context.findRenderObject();
+    final canvasBox = _key.currentContext!.findRenderObject() as RenderBox;
   }
 
   @override
@@ -46,6 +54,7 @@ class _Screen20211215State extends State<Screen20211215>
                 ],
               ),
               child: Container(
+                key: _key,
                 margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
