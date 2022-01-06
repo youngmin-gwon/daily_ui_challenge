@@ -1,4 +1,5 @@
 import 'package:daily_ui/2021/12/board_202112.dart';
+import 'package:daily_ui/2022/2022.dart';
 import 'package:flutter/material.dart';
 
 class AppWidget extends StatelessWidget {
@@ -38,6 +39,21 @@ class HomeScreen extends StatelessWidget {
                 },
                 child: const Text(
                   "2021",
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return const Board2022Screen();
+                      },
+                    ),
+                  );
+                },
+                child: const Text(
+                  "2022",
                 ),
               ),
               const SizedBox(height: 12),
