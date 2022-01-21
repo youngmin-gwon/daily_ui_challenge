@@ -11,9 +11,9 @@ class Screen20220107 extends StatefulWidget {
 
 class _Screen20220107State extends State<Screen20220107> {
   final assetPathList = [
-    "assets/image/flutter.jpg",
-    "assets/image/react.png",
-    "assets/image/xamarin.png",
+    "assets/images/flutter.jpg",
+    "assets/images/react.png",
+    "assets/images/xamarin.png",
   ];
 
   int _tabIndex = 0;

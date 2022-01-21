@@ -14,7 +14,6 @@ class Styles {
       color: color,
       fontWeight: bold ? FontWeight.bold : FontWeight.normal,
       height: height,
-      package: "drink_rewards_list",
     );
   }
 }

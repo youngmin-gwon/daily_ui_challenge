@@ -8,10 +8,6 @@ class LiquidSimulation {
   List<Offset> endPts = [];
   List<Animation<double>> ctrlTweens = [];
 
-  double endPtX1 = .5;
-  double endPtY1 = 1;
-  double xOffset = 0;
-
   double? duration;
   double? time;
 

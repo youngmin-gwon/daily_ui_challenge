@@ -16,14 +16,23 @@ class DemoData {
 
   // List of available drinks
   List<DrinkData> drinks = const [
-    DrinkData(title: "Coffee", requiredPoints: 100, iconImage: "Coffee.png"),
-    DrinkData(title: "Tea", requiredPoints: 150, iconImage: "Tea.png"),
-    DrinkData(title: "Latte", requiredPoints: 250, iconImage: "Latte.png"),
+    DrinkData(
+        title: "Coffee",
+        requiredPoints: 100,
+        iconImage: "assets/images/Coffee.png"),
+    DrinkData(
+        title: "Tea", requiredPoints: 150, iconImage: "assets/images/Tea.png"),
+    DrinkData(
+        title: "Latte",
+        requiredPoints: 250,
+        iconImage: "assets/images/Latte.png"),
     DrinkData(
         title: "Frappuccino",
         requiredPoints: 350,
-        iconImage: "Frappuccino.png"),
+        iconImage: "assets/images/Frappuccino.png"),
     DrinkData(
-        title: "Pressed Juice", requiredPoints: 450, iconImage: "Juice.png"),
+        title: "Pressed Juice",
+        requiredPoints: 450,
+        iconImage: "assets/images/Juice.png"),
   ];
 }
