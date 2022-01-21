@@ -30,7 +30,7 @@ class DrinkCard extends StatefulWidget {
 
 class _DrinkCardState extends State<DrinkCard>
     with SingleTickerProviderStateMixin {
-  late bool _wasOpen;
+  late bool _wasOpen = false;
   late Animation<double> _fillTween;
   late Animation<double> _pointsTween;
   late AnimationController _liquidSimController;
@@ -152,7 +152,7 @@ class _DrinkCardState extends State<DrinkCard>
         Transform.translate(
           offset: Offset(
             0,
-            DrinkCard.nominalHeightClosed * 1.2 -
+            DrinkCard.nominalHeightOpen * 1.2 -
                 DrinkCard.nominalHeightOpen *
                     _fillTween.value *
                     _maxFillLevel *
@@ -160,7 +160,7 @@ class _DrinkCardState extends State<DrinkCard>
           ),
           child: CustomPaint(
             painter: LiquidPainter(
-                fillLevel: 0,
+                fillLevel: fillLevel,
                 simulation1: _liquidSim1,
                 simulation2: _liquidSim2,
                 waveHeight: 100),
@@ -175,12 +175,11 @@ class _DrinkCardState extends State<DrinkCard>
       children: [
         // Icon
         Image.asset(
-          "images/" + widget.drinkData.iconImage,
+          widget.drinkData.iconImage,
           fit: BoxFit.fitWidth,
           width: 50,
-          package: "drink_rewards_list",
         ),
-        SizedBox(width: 24),
+        const SizedBox(width: 24),
         //Label
         Expanded(
           child: Text(

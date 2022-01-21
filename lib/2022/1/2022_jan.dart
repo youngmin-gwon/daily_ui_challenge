@@ -1,3 +1,4 @@
+import 'package:daily_ui/2022/1/13/drink_rewards_list.dart';
 import 'package:daily_ui/2022/1/6/screens/onboarding/onboarding_screen.dart';
 import 'package:daily_ui/2022/1/7/20220107.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,15 @@ class January2022Screen extends StatelessWidget {
                   ));
                 },
                 child: const Text("7"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const DrinkRewardsList(),
+                  ));
+                },
+                child: const Text("13"),
               ),
               const SizedBox(height: 12),
             ],
