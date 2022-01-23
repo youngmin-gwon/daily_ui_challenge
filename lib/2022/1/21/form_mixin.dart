@@ -3,10 +3,16 @@ mixin FormMixin {
   double formCompletion = 0;
   bool isFormErrorVisible = false;
 
-  void onItemValidate(
-      {required String name, required bool isValid, required value});
+  void onItemValidate({
+    required String name,
+    required bool isValid,
+    required String value,
+  });
 
-  void onItemChange({required String name, required String value});
+  void onItemChange({
+    required String name,
+    required String value,
+  });
 
   int countValidItems() {
     int count = 0;
