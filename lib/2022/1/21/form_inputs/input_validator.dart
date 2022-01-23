@@ -5,8 +5,6 @@ class InputValidator {
 
   static bool validate(dynamic type, String value,
       {CreditCardNetwork? cardNetwork}) {
-    assert(type.runtimeType == CreditCardInputType && cardNetwork != null);
-
     if (type.runtimeType == InputType) {
       switch (type as InputType) {
         case InputType.email:

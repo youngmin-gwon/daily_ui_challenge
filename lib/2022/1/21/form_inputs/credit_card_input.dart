@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:daily_ui/2022/1/21/form_inputs/input_validator.dart';
 import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +23,7 @@ class CreditCardInput extends StatefulWidget {
   final CreditCardInputType inputType;
   final CreditCardNetwork? cardNetwork;
   final Function onValidate;
-  final Function(CreditCardNetwork?)? onChange;
+  final void Function(CreditCardNetwork)? onChange;
 
   @override
   _CreditCardInputState createState() => _CreditCardInputState();
@@ -33,7 +31,7 @@ class CreditCardInput extends StatefulWidget {
 
 class _CreditCardInputState extends State<CreditCardInput> {
   late MaskedTextController _textController;
-  late CreditCardNetwork? _creditCardType;
+  late CreditCardNetwork _creditCardType;
 
   bool _isAutoValidating = false;
   bool? _isValid;
@@ -47,6 +45,7 @@ class _CreditCardInputState extends State<CreditCardInput> {
   void initState() {
     super.initState();
     _textController = MaskedTextController(mask: "00");
+    _creditCardType = CreditCardNetwork.amex;
   }
 
   @override
@@ -58,7 +57,7 @@ class _CreditCardInputState extends State<CreditCardInput> {
   set isValid(bool isValid) {
     if (isValid != _isValid) {
       _isValid = isValid;
-      widget.onValidate(keyValue, _isValid, value: _value);
+      widget.onValidate(name: keyValue, isValid: _isValid, value: _value);
     }
   }
 
@@ -186,9 +185,7 @@ class _CreditCardInputState extends State<CreditCardInput> {
             _value.substring(0, 2) == '55') {
           _creditCardType = CreditCardNetwork.mastercard;
           _textController.updateMask("0000 0000 0000 0000");
-        } else {
-          _creditCardType = null;
-        }
+        } else {}
         break;
       case CreditCardInputType.expirationData:
         _textController.updateMask("00/00");

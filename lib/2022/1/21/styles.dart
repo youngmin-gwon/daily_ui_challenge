@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Styles {
   static double formRadius = 20;
   static double hzPadding = 37;
+  static double vtFormPadding = 18;
 
   static Color primaryColor = const Color(0xff00b27f);
   static Color secondaryColor = const Color(0xff007b80);

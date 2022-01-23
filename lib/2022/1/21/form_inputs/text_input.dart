@@ -40,13 +40,15 @@ class _TextInputState extends State<TextInput> {
   String _value = "";
   String _errorText = "";
 
-  String get _keyValue => (widget.key as ValueKey).value as String;
+  String get _keyValue => (widget.key as ValueKey? ?? const ValueKey("")).value as String;
 
   @override
   void initState() {
     super.initState();
     // Reset the valid state on notifier change
-    widget.valueNotifier?.addListener(() => _isValid = false);
+    if (widget.valueNotifier != null) {
+      widget.valueNotifier?.addListener(() => _isValid = false);
+    }
   }
 
   @override
@@ -57,7 +59,7 @@ class _TextInputState extends State<TextInput> {
   set isValid(bool isValid) {
     if (_isValid != isValid) {
       _isValid = isValid;
-      widget.onValidate(_keyValue, _isValid, value: _value);
+      widget.onValidate(name: _keyValue, isValid: _isValid, value: _value);
     }
   }
 
@@ -130,7 +132,7 @@ class _TextInputState extends State<TextInput> {
   void _handleChange(String value) {
     // save value status
     _value = value;
-    widget.onChange?.call(_keyValue, value);
+    widget.onChange?.call(name: _keyValue, value: value);
 
     // activate validation
     Future.delayed(const Duration(milliseconds: 300), () => setState(() {}));

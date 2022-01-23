@@ -29,7 +29,8 @@ class _DropdownMenuState extends State<DropdownMenu> {
 
   set isValid(bool isValid) {
     _isValid = isValid;
-    widget.onValidate.call(_keyValue, _isValid, value: _selectedOption);
+    widget.onValidate
+        .call(name: _keyValue, isValid: _isValid, value: _selectedOption);
   }
 
   @override
@@ -137,34 +138,6 @@ class _DropdownOptionsState extends State<DropdownOptions> {
     _selectedOption = widget.selectedOption;
   }
 
-  Widget _buildOption(String option) {
-    return GestureDetector(
-      onTap: () => _selectOption(option),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: BorderSide(
-              color: Styles.lightGrayColor,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(option, style: Styles.orderTotalLabel),
-            Icon(Icons.check,
-                color: _selectedOption == option
-                    ? Styles.secondaryColor
-                    : Colors.transparent,
-                size: 40),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _sendSelectedOption() {
     if (_selectedOption.isNotEmpty) {
       Navigator.pop(context, _selectedOption);
@@ -240,7 +213,7 @@ class DropdownBuildOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _selectOption(option),
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
         decoration: BoxDecoration(
@@ -255,11 +228,7 @@ class DropdownBuildOption extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(option, style: Styles.orderTotalLabel),
-            Icon(Icons.check,
-                color: _selectedOption == option
-                    ? Styles.secondaryColor
-                    : Colors.transparent,
-                size: 40),
+            Icon(Icons.check, color: iconColor, size: 40),
           ],
         ),
       ),
