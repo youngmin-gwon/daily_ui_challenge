@@ -17,6 +17,7 @@ dependencies:
   font_awesome_flutter: ^9.2.0
   extended_masked_text: ^2.3.1
   provider: ^6.0.2
+  english_words: ^4.0.0
 
 dev_dependencies:
   flutter_test:
