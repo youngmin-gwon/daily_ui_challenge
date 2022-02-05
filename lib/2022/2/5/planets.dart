@@ -19,16 +19,24 @@ class _PlanetsPageState extends State<PlanetsPage>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     );
     _controller1 = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 4),
+      duration: const Duration(seconds: 4),
     );
     _controller2 = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 5),
+      duration: const Duration(seconds: 5),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _controller1.dispose();
+    _controller2.dispose();
+    super.dispose();
   }
 
   @override
