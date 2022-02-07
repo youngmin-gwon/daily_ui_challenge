@@ -1,4 +1,5 @@
 import 'package:daily_ui/2022/1/30/models/phrase_model.dart';
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 
 class PhrasesProvider extends InheritedWidget {
