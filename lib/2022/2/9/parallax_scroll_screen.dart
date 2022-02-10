@@ -58,7 +58,7 @@ class _ParallaxScrollScreenState extends State<ParallaxScrollScreen> {
             ListView(
               children: [
                 Container(
-                  height: 480,
+                  height: 450,
                   color: Colors.transparent,
                 ),
                 DecoratedBox(
