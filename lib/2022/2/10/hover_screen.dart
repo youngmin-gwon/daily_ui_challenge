@@ -1,13 +1,40 @@
 import 'package:flutter/material.dart';
 
-class HoverEffectScreen extends StatefulWidget {
+import '../../../core/presentation/responsive_widget.dart';
+
+class HoverEffectScreen extends StatelessWidget {
   const HoverEffectScreen({Key? key}) : super(key: key);
 
   @override
-  State<HoverEffectScreen> createState() => _HoverEffectScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: const ResponsiveWidget(
+        mobile: HoverEffectPage(isMobileSize: true),
+        tablet: HoverEffectPage(),
+        desktop: HoverEffectPage(),
+      ),
+    );
+  }
 }
 
-class _HoverEffectScreenState extends State<HoverEffectScreen>
+class HoverEffectPage extends StatefulWidget {
+  const HoverEffectPage({
+    Key? key,
+    this.isMobileSize = false,
+  }) : super(key: key);
+
+  final bool isMobileSize;
+
+  @override
+  State<HoverEffectPage> createState() => _HoverEffectPageState();
+}
+
+class _HoverEffectPageState extends State<HoverEffectPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -31,7 +58,7 @@ class _HoverEffectScreenState extends State<HoverEffectScreen>
     super.dispose();
   }
 
-  void togglePointerSize(bool hovering) async {
+  void togglePointerSize(bool hovering) {
     if (hovering) {
       _controller.forward();
     } else {
@@ -41,52 +68,61 @@ class _HoverEffectScreenState extends State<HoverEffectScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: MouseRegion(
-        opaque: false,
-        cursor: SystemMouseCursors.none,
-        onHover: (e) => offsetNotifier.value = e.localPosition,
-        onExit: (e) => offsetNotifier.value = null,
-        child: ValueListenableBuilder<Offset?>(
-            valueListenable: offsetNotifier,
-            builder: (context, offset, child) {
-              return Stack(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextColumn(
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                          onLinkHovered: togglePointerSize,
-                        ),
-                      ),
-                      Expanded(
-                        child: TextColumn(
-                          onLinkHovered: togglePointerSize,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (offset != null) ...[
-                    AnimatedBuilder(
-                        animation: _controller,
-                        builder: (context, snapshot) {
-                          return AnimatedPointer(
-                            pointerOffset: offset,
-                            radius: 45 +
-                                100 * _controller.drive(pointerAnimation).value,
-                          );
-                        }),
-                    AnimatedPointer(
-                      pointerOffset: offset,
-                      movementDuration: const Duration(milliseconds: 200),
-                      radius: 10,
-                    )
-                  ]
-                ],
-              );
-            }),
+    final children = [
+      Expanded(
+        child: TextColumn(
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          onLinkHovered: togglePointerSize,
+        ),
+      ),
+      Expanded(
+        child: GestureDetector(
+          child: TextColumn(
+            onLinkHovered: togglePointerSize,
+          ),
+        ),
+      ),
+    ];
+
+    return MouseRegion(
+      opaque: false,
+      cursor: SystemMouseCursors.none,
+      onHover: (e) => offsetNotifier.value = e.localPosition,
+      onExit: (e) => offsetNotifier.value = null,
+      child: ValueListenableBuilder<Offset?>(
+        valueListenable: offsetNotifier,
+        builder: (context, value, child) {
+          return Stack(
+            children: [
+              if (widget.isMobileSize)
+                Column(
+                  children: children,
+                )
+              else
+                Row(
+                  children: children,
+                ),
+              if (offsetNotifier.value != null) ...[
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return AnimatedPointer(
+                      pointerOffset: offsetNotifier.value!,
+                      radius:
+                          45 + 100 * _controller.drive(pointerAnimation).value,
+                    );
+                  },
+                ),
+                AnimatedPointer(
+                  pointerOffset: offsetNotifier.value!,
+                  movementDuration: const Duration(milliseconds: 10),
+                  radius: 10,
+                ),
+              ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -100,11 +136,12 @@ class TextColumn extends StatelessWidget {
     this.backgroundColor = Colors.white,
   }) : super(key: key);
 
-  final Function(bool) onLinkHovered;
+  final void Function(bool) onLinkHovered;
   final Color textColor;
   final Color backgroundColor;
 
   TextStyle get _defaultTextStyle => TextStyle(color: textColor);
+
   @override
   Widget build(BuildContext context) {
     return Ink(
@@ -114,12 +151,9 @@ class TextColumn extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Hello',
-            style: _defaultTextStyle.copyWith(fontSize: 30),
-          ),
+          Text("Hello", style: _defaultTextStyle.copyWith(fontSize: 30)),
           const SizedBox(height: 20),
-          Text('Check out this link:', style: _defaultTextStyle),
+          Text("Check out this link:", style: _defaultTextStyle),
           const SizedBox(height: 30),
           InkWell(
             focusColor: Colors.transparent,
@@ -128,15 +162,13 @@ class TextColumn extends StatelessWidget {
             splashColor: Colors.transparent,
             onHover: onLinkHovered,
             mouseCursor: SystemMouseCursors.none,
-            onTap: () => null,
-            child: Ink(
-              child: Column(
-                children: [
-                  Text('See what happens', style: _defaultTextStyle),
-                  const SizedBox(height: 7),
-                  Container(color: textColor, width: 50, height: 2)
-                ],
-              ),
+            onTap: () {},
+            child: Column(
+              children: [
+                Text('See what happens', style: _defaultTextStyle),
+                const SizedBox(height: 7),
+                Container(color: textColor, width: 50, height: 2)
+              ],
             ),
           ),
         ],
@@ -149,9 +181,10 @@ class AnimatedPointer extends StatelessWidget {
   const AnimatedPointer({
     Key? key,
     this.movementDuration = const Duration(milliseconds: 700),
-    this.radius = 30,
     required this.pointerOffset,
+    this.radius = 30,
   }) : super(key: key);
+
   final Duration movementDuration;
   final Offset pointerOffset;
   final double radius;
@@ -170,22 +203,18 @@ class AnimatedPointer extends StatelessWidget {
   }
 }
 
-// Multiple containers stacked on top of each other will block hover events
-// events, and the blending behaviour of an InkWell is a bit strange, so
-// I resorted to using a CustomPainter.
 class Pointer extends CustomPainter {
   final double radius;
 
-  Pointer(this.radius);
+  const Pointer(this.radius);
+
+  static final _paint = Paint()
+    ..color = Colors.white
+    ..blendMode = BlendMode.difference;
+
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawCircle(
-      const Offset(0, 0),
-      radius,
-      Paint()
-        ..color = Colors.white
-        ..blendMode = BlendMode.difference,
-    );
+    canvas.drawCircle(const Offset(0, 0), radius, _paint);
   }
 
   @override
