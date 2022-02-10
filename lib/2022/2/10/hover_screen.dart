@@ -74,12 +74,16 @@ class _HoverEffectPageState extends State<HoverEffectPage>
           backgroundColor: Colors.black,
           textColor: Colors.white,
           onLinkHovered: togglePointerSize,
+          onEnter: () => _controller.forward(),
+          onExit: () => _controller.reverse(),
         ),
       ),
       Expanded(
         child: GestureDetector(
           child: TextColumn(
             onLinkHovered: togglePointerSize,
+            onEnter: () => _controller.forward(),
+            onExit: () => _controller.reverse(),
           ),
         ),
       ),
@@ -93,34 +97,37 @@ class _HoverEffectPageState extends State<HoverEffectPage>
       child: ValueListenableBuilder<Offset?>(
         valueListenable: offsetNotifier,
         builder: (context, value, child) {
-          return Stack(
-            children: [
-              if (widget.isMobileSize)
-                Column(
-                  children: children,
-                )
-              else
-                Row(
-                  children: children,
-                ),
-              if (offsetNotifier.value != null) ...[
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return AnimatedPointer(
-                      pointerOffset: offsetNotifier.value!,
-                      radius:
-                          45 + 100 * _controller.drive(pointerAnimation).value,
-                    );
-                  },
-                ),
-                AnimatedPointer(
-                  pointerOffset: offsetNotifier.value!,
-                  movementDuration: const Duration(milliseconds: 10),
-                  radius: 10,
-                ),
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onPanStart: (details) =>
+                offsetNotifier.value = details.localPosition,
+            onPanUpdate: (details) =>
+                offsetNotifier.value = details.localPosition,
+            child: Stack(
+              children: [
+                if (widget.isMobileSize)
+                  Column(children: children)
+                else
+                  Row(children: children),
+                if (offsetNotifier.value != null) ...[
+                  AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return AnimatedPointer(
+                        pointerOffset: offsetNotifier.value!,
+                        radius: 45 +
+                            100 * _controller.drive(pointerAnimation).value,
+                      );
+                    },
+                  ),
+                  AnimatedPointer(
+                    pointerOffset: offsetNotifier.value!,
+                    movementDuration: const Duration(milliseconds: 10),
+                    radius: 10,
+                  ),
+                ],
               ],
-            ],
+            ),
           );
         },
       ),
@@ -134,11 +141,16 @@ class TextColumn extends StatelessWidget {
     required this.onLinkHovered,
     this.textColor = Colors.black,
     this.backgroundColor = Colors.white,
+    required this.onEnter,
+    required this.onExit,
   }) : super(key: key);
 
   final void Function(bool) onLinkHovered;
   final Color textColor;
   final Color backgroundColor;
+
+  final void Function() onEnter;
+  final void Function() onExit;
 
   TextStyle get _defaultTextStyle => TextStyle(color: textColor);
 
