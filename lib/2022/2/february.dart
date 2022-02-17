@@ -1,10 +1,12 @@
 import 'package:daily_ui/2022/2/10/hover_screen.dart';
 import 'package:daily_ui/2022/2/11/filling_button_screen.dart';
+import 'package:daily_ui/2022/2/17_fading_text/fading_shadermask_screen.dart';
 import 'package:daily_ui/2022/2/4/instagram_animation.dart';
 import 'package:daily_ui/2022/2/5/path_selection_screen.dart';
 import 'package:daily_ui/2022/2/7/google_logo_screen.dart';
 import 'package:flutter/material.dart';
 
+import '8/parallax_effect_screen.dart';
 import '9/parallax_scroll_screen.dart';
 
 class February2022Screen extends StatelessWidget {
@@ -52,16 +54,16 @@ class February2022Screen extends StatelessWidget {
                 child: const Text("7"),
               ),
               const SizedBox(height: 12),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.of(context).push(MaterialPageRoute(
-              //       builder: (context) {
-              //         return const ParallaxEffectScreen();
-              //       },
-              //     ));
-              //   },
-              //   child: const Text("8"),
-              // ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return const ParallaxEffectScreen();
+                    },
+                  ));
+                },
+                child: const Text("8"),
+              ),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
@@ -94,6 +96,17 @@ class February2022Screen extends StatelessWidget {
                   ));
                 },
                 child: const Text("11"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return const FadingShaderMaskScreen();
+                    },
+                  ));
+                },
+                child: const Text("17"),
               ),
               const SizedBox(height: 12),
             ],
