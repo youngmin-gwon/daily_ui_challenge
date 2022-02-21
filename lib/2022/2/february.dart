@@ -2,6 +2,7 @@ import 'package:daily_ui/2022/2/10/hover_screen.dart';
 import 'package:daily_ui/2022/2/11/filling_button_screen.dart';
 import 'package:daily_ui/2022/2/17_fading_text/fading_shadermask_screen.dart';
 import 'package:daily_ui/2022/2/18/glowing_screen.dart';
+import 'package:daily_ui/2022/2/18/glowing_test_widget.dart';
 import 'package:daily_ui/2022/2/4/instagram_animation.dart';
 import 'package:daily_ui/2022/2/5/path_selection_screen.dart';
 import 'package:daily_ui/2022/2/7/google_logo_screen.dart';
@@ -131,6 +132,17 @@ class February2022Screen extends StatelessWidget {
                   ));
                 },
                 child: const Text("18"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return const GlowingTestWidget();
+                    },
+                  ));
+                },
+                child: const Text("18-1"),
               ),
               const SizedBox(height: 12),
             ],
