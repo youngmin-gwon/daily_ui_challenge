@@ -93,12 +93,35 @@ class GlowingScreen extends StatelessWidget {
   }
 }
 
-class GlowingWidget extends StatelessWidget {
+class GlowingWidget extends StatefulWidget {
   const GlowingWidget({Key? key}) : super(key: key);
 
+  @override
+  State<GlowingWidget> createState() => _GlowingWidgetState();
+}
+
+class _GlowingWidgetState extends State<GlowingWidget>
+    with SingleTickerProviderStateMixin {
   final _logoBaseColor = const Color(0xFFF0F0F0);
+
   final _logoHighlightColor = const Color(0xFFFFFFFF);
-  final _logoShadowColor = const Color(0xFF0E0E0E);
+
+  final _logoShadowColor = const Color(0xFFE0E0E0);
+
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Widget _buildLogo() {
     return Transform.translate(
@@ -135,7 +158,7 @@ class GlowingWidget extends StatelessWidget {
       aspectRatio: 1,
       child: Stack(
         children: [
-          const CustomPaint(
+          CustomPaint(
             size: Size.infinite,
             painter: ProtectPatternPainter(),
           ),
@@ -164,7 +187,22 @@ class ProtectPatternPainter extends CustomPainter {
       sigmaY: 4,
       tileMode: TileMode.decal,
     );
-  const ProtectPatternPainter();
+  // glow effect
+  static const primaryGlowThickness = 6;
+  static const secondaryGlowThickness = 7;
+  late Paint primaryGlowPaint;
+  late Paint secondaryGlowPaint;
+
+  ProtectPatternPainter() {
+    primaryGlowPaint = Paint()
+      ..color = const Color(0xFF83DB0F)
+      ..imageFilter =
+          ImageFilter.blur(sigmaX: 2, sigmaY: 2, tileMode: TileMode.decal);
+    secondaryGlowPaint = Paint()
+      ..color = const Color(0xFFACFF26)
+      ..imageFilter =
+          ImageFilter.blur(sigmaY: 15, sigmaX: 15, tileMode: TileMode.decal);
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -175,7 +213,7 @@ class ProtectPatternPainter extends CustomPainter {
     final int ringCount =
         ((finalRingRadius - firstRingRadius) / ringGap).floor();
 
-    _drawShadow(
+    _drawShadowAndGlow(
       canvas: canvas,
       drawableArea: size,
       center: ringCenter,
@@ -214,7 +252,7 @@ class ProtectPatternPainter extends CustomPainter {
     );
   }
 
-  void _drawShadow({
+  void _drawShadowAndGlow({
     required Canvas canvas,
     required Size drawableArea,
     required Offset center,
@@ -225,6 +263,16 @@ class ProtectPatternPainter extends CustomPainter {
       ..addOval(Rect.fromCircle(center: center, radius: centerCircleRadius))
       ..fillType = PathFillType.evenOdd;
     canvas.clipPath(maskPath);
+    canvas.drawCircle(
+      center,
+      centerCircleRadius + secondaryGlowThickness,
+      secondaryGlowPaint,
+    );
+    canvas.drawCircle(
+      center,
+      centerCircleRadius + primaryGlowThickness,
+      primaryGlowPaint,
+    );
     canvas.drawCircle(
       center,
       centerCircleRadius,
