@@ -70,7 +70,7 @@ class GlowingScreen extends StatelessWidget {
                               Icons.mail,
                               size: 30,
                             ),
-                            Text("Traning")
+                            Text("Training")
                           ],
                         ),
                       ],
