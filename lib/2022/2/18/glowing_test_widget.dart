@@ -81,7 +81,8 @@ class GlowingTestPainter extends CustomPainter {
   final double startDotRadius = 2.5;
   final double endDotRadius = 5;
   final double ringGap = 7;
-  final double startDotOpacity = 0.08;
+
+  final double startDotOpacity = 0.005;
   final double endDotOpacity = 0.005;
   static final dotPaint = Paint();
   static final shadowPaint = Paint()
@@ -98,11 +99,11 @@ class GlowingTestPainter extends CustomPainter {
 
   GlowingTestPainter() {
     primaryGlowPaint = Paint()
-      ..color = Color(0xFF83DB0F)
+      ..color = const Color(0xFF83DB0F)
       ..imageFilter =
           ImageFilter.blur(sigmaX: 2, sigmaY: 2, tileMode: TileMode.decal);
     secondaryGlowPaint = Paint()
-      ..color = Color(0xFFACFF26)
+      ..color = const Color(0xFFACFF26)
       ..imageFilter =
           ImageFilter.blur(sigmaY: 15, sigmaX: 15, tileMode: TileMode.decal);
   }
@@ -164,9 +165,7 @@ class GlowingTestPainter extends CustomPainter {
     canvas.drawCircle(center, centerCircleRadius + secondaryGlowThickness,
         secondaryGlowPaint);
     canvas.drawCircle(
-			center, centerCircleRadius + primaryGlodf:-="-=:sfset
-	clipboard+=unnamedplusfdf-="(ksdfjwlertkldsjafgp;sdufjwekjfjkkkjdf:-="-=:sfset
-clipboard+=unnamedplusfdsdfa::-=f:-="sa="sd:-="=-:"sdfkjwerihjkk")Thickness, primaryGlowPaint);
+        center, centerCircleRadius + primaryGlowThickness, primaryGlowPaint);
     canvas.drawCircle(center, centerCircleRadius, shadowPaint);
   }
 
