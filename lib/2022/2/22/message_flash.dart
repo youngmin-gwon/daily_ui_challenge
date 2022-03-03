@@ -19,7 +19,9 @@ class MessageFlashPage extends StatelessWidget {
           height: 350,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(12)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
           alignment: Alignment.center,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
