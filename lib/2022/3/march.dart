@@ -1,4 +1,5 @@
 import 'package:daily_ui/2022/3/1/page_transition.dart';
+import 'package:daily_ui/2022/3/5/wheel_scroll_screen.dart';
 import 'package:flutter/material.dart';
 
 class MarchScreen extends StatelessWidget {
@@ -26,6 +27,16 @@ class MarchScreen extends StatelessWidget {
                 child: const Text("1"),
               ),
               const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const WheelScrollScreen(),
+                    ),
+                  );
+                },
+                child: const Text("5"),
+              )
             ],
           ),
         ),
