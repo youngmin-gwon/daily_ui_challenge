@@ -1,5 +1,5 @@
-import 'package:daily_ui/2022/3/15/add_card.dart';
-import 'package:daily_ui/2022/3/15/profile_section.dart';
+import 'package:daily_ui/2022/3/15_banking_app_animation/add_card.dart';
+import 'package:daily_ui/2022/3/15_banking_app_animation/profile_section.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -138,6 +138,7 @@ class _BankAppScreenState extends State<BankAppScreen>
               ),
             ),
           ),
+          // Profile Card
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
@@ -159,7 +160,61 @@ class _BankAppScreenState extends State<BankAppScreen>
                       ),
                     ),
             ),
-          )
+          ),
+
+          // Expanses Card
+          Positioned(
+            top: size.height * .85 + verPos,
+            left: size.width * .1,
+            right: size.width * .1,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 100),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              child: _pageClamp < .9
+                  ? const SizedBox.shrink()
+                  : TweenAnimationBuilder<double>(
+                      key: Key(_dummyCard[_page.round()]!.expenses.first.title),
+                      tween: Tween<double>(begin: 25, end: 0),
+                      duration: const Duration(milliseconds: 200),
+                      builder: (context, value, _) {
+                        return Transform.translate(
+                          offset: Offset(0, value),
+                          child: ListTile(
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                      _dummyCard[_page.round()]!
+                                          .expenses
+                                          .first
+                                          .image,
+                                    ),
+                                    filterQuality: FilterQuality.medium,
+                                    fit: BoxFit.fill,
+                                  )),
+                            ),
+                            title: Text(_dummyCard[_page.round()]!
+                                .expenses
+                                .first
+                                .title),
+                            subtitle: Text(_dummyCard[_page.round()]!
+                                .expenses
+                                .first
+                                .description),
+                            trailing: Text(
+                              '\$${_dummyCard[_page.round()]!.expenses.first.amount.toStringAsFixed(2)}',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ),
         ],
       ),
     );
@@ -242,7 +297,7 @@ const _dummyCard = <_CardModel?>[
     numbering: '7405',
     price: 2032.80,
     textColor: Color(0xFF004380),
-    expanses: [
+    expenses: [
       _ExpanseModel(
         image: 'assets/images/netflix_logo.jpg',
         title: 'Netflix',
@@ -257,7 +312,7 @@ const _dummyCard = <_CardModel?>[
       numbering: '3077',
       price: 800.11,
       textColor: Color(0xFF0044f7),
-      expanses: [
+      expenses: [
         _ExpanseModel(
           image: 'assets/images/spotify_logo.png',
           title: 'Spotify',
@@ -271,7 +326,7 @@ const _dummyCard = <_CardModel?>[
       numbering: '0923',
       price: 1032.23,
       textColor: Colors.white,
-      expanses: [
+      expenses: [
         _ExpanseModel(
           image: 'assets/images/starbucks_logo.jpg',
           title: 'Starbucks',
@@ -287,7 +342,7 @@ class _CardModel {
   final String numbering;
   final double price;
   final Color? textColor;
-  final List<_ExpanseModel> expanses;
+  final List<_ExpanseModel> expenses;
 
   const _CardModel({
     required this.background,
@@ -295,7 +350,7 @@ class _CardModel {
     required this.numbering,
     required this.price,
     this.textColor,
-    this.expanses = const [],
+    this.expenses = const [],
   });
 }
 
