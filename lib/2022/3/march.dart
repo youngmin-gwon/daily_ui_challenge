@@ -1,6 +1,7 @@
 import 'package:daily_ui/2022/3/14_button_jumping_animation/share_button_animation.dart';
 import 'package:daily_ui/2022/3/15_banking_app_animation/bank_app_screen.dart';
 import 'package:daily_ui/2022/3/16_custom_transition/custom_transition_screen.dart';
+import 'package:daily_ui/2022/3/17_card_gradient/card_gradient_screen.dart';
 import 'package:daily_ui/2022/3/1_page_stretching_animation/page_transition.dart';
 import 'package:daily_ui/2022/3/5_wheel_scroll_animation/wheel_scroll_screen.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,17 @@ class MarchScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("16. Custom Transition"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CardGradientScreen(),
+                    ),
+                  );
+                },
+                child: const Text("17. Card Gradient"),
               ),
             ],
           ),
