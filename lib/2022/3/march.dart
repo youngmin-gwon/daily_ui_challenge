@@ -1,7 +1,8 @@
-import 'package:daily_ui/2022/3/1/page_transition.dart';
-import 'package:daily_ui/2022/3/14/share_button_animation.dart';
-import 'package:daily_ui/2022/3/15/bank_app_screen.dart';
-import 'package:daily_ui/2022/3/5/wheel_scroll_screen.dart';
+import 'package:daily_ui/2022/3/14_button_jumping_animation/share_button_animation.dart';
+import 'package:daily_ui/2022/3/15_banking_app_animation/bank_app_screen.dart';
+import 'package:daily_ui/2022/3/16_custom_transition/custom_transition_screen.dart';
+import 'package:daily_ui/2022/3/1_page_stretching_animation/page_transition.dart';
+import 'package:daily_ui/2022/3/5_wheel_scroll_animation/wheel_scroll_screen.dart';
 import 'package:flutter/material.dart';
 
 class MarchScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class MarchScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text("1"),
+                child: const Text("1. Page Stretching Animation"),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -37,7 +38,7 @@ class MarchScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text("5"),
+                child: const Text("5. Wheel Scroll Animation"),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -48,7 +49,7 @@ class MarchScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text("14"),
+                child: const Text("14. Button Jumping Animation"),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -59,7 +60,18 @@ class MarchScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: const Text("15"),
+                child: const Text("15. Banking App Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CustomTransitionScreen(),
+                    ),
+                  );
+                },
+                child: const Text("16. Custom Transition"),
               ),
             ],
           ),

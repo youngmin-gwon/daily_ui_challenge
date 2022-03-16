@@ -10,7 +10,9 @@ class Board2022Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('2022'),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
