@@ -22,12 +22,12 @@ class _CardGradientScreenState extends State<CardGradientScreen>
       curve: Curves.easeIn,
     ),
   );
-  final _alignmentTween = AlignmentTween(
+  static final _alignmentTween = AlignmentTween(
     begin: const Alignment(0.5, 0.2),
     end: const Alignment(-0.5, -0.2),
   );
 
-  final _radiusTween = TweenSequence([
+  static final _radiusTween = TweenSequence([
     TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 0.7), weight: 1),
     TweenSequenceItem(tween: Tween<double>(begin: 0.7, end: 0.7), weight: 1),
     TweenSequenceItem(tween: Tween<double>(begin: 0.7, end: 0.8), weight: 1),
@@ -119,35 +119,33 @@ class _CardGradientScreenState extends State<CardGradientScreen>
                               _radiusTween.animate(_animationController).value,
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Usim(width: usimWidth, height: usimHeight),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Hello',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const Icon(
-                                Icons.workspaces_rounded,
-                                color: Colors.white,
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
+                      child: child,
                     ),
                   ),
                 );
               },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Usim(width: usimWidth, height: usimHeight),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Hello',
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const Icon(
+                        Icons.workspaces_rounded,
+                        color: Colors.white,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
