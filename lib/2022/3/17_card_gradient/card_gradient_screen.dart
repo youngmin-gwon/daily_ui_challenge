@@ -22,6 +22,17 @@ class _CardGradientScreenState extends State<CardGradientScreen>
       curve: Curves.easeIn,
     ),
   );
+  final _alignmentTween = AlignmentTween(
+    begin: const Alignment(0.5, 0.2),
+    end: const Alignment(-0.5, -0.2),
+  );
+
+  final _radiusTween = TweenSequence([
+    TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 0.7), weight: 1),
+    TweenSequenceItem(tween: Tween<double>(begin: 0.7, end: 0.7), weight: 1),
+    TweenSequenceItem(tween: Tween<double>(begin: 0.7, end: 0.8), weight: 1),
+  ]);
+
   late Size size;
 
   bool isLeftSide(double x) {
@@ -97,14 +108,15 @@ class _CardGradientScreenState extends State<CardGradientScreen>
                         borderRadius: BorderRadius.circular(12),
                         color: Colors.red,
                         gradient: RadialGradient(
-                          colors: [
+                          colors: const [
                             Colors.white,
                             Colors.red,
                           ],
-                          center: Alignment(
-                            0,
-                            0,
-                          ),
+                          center: _alignmentTween
+                              .animate(_animationController)
+                              .value,
+                          radius:
+                              _radiusTween.animate(_animationController).value,
                         ),
                       ),
                       child: Column(
