@@ -23,8 +23,8 @@ class _CardGradientScreenState extends State<CardGradientScreen>
     ),
   );
   static final _alignmentTween = AlignmentTween(
-    begin: const Alignment(0.5, 0.2),
-    end: const Alignment(-0.5, -0.2),
+    begin: const Alignment(0.5, 0.4),
+    end: const Alignment(-0.5, -0.0),
   );
 
   static final _radiusTween = TweenSequence([
