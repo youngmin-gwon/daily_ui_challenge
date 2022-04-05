@@ -1,6 +1,7 @@
 import 'package:daily_ui/2022/4/1_shimmer_animation/shimmer_animation_screen.dart';
 import 'package:daily_ui/2022/4/2_shimmer_text_animation/shimmer_animation_text_screen.dart';
 import 'package:daily_ui/2022/4/3_expandable_fab/expandable_fab_screen.dart';
+import 'package:daily_ui/2022/4/4_curtain_blind_animation/curtain_blind_screen.dart';
 import 'package:flutter/material.dart';
 
 class AprilScreen extends StatelessWidget {
@@ -49,6 +50,17 @@ class AprilScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("3. Expandable FAB Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CurtainBlindScreen(),
+                    ),
+                  );
+                },
+                child: const Text("4. Curtain Blind Animation"),
               ),
             ],
           ),
