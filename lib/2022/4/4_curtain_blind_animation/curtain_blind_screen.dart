@@ -65,12 +65,12 @@ class _CurtainBlindScreenState extends State<CurtainBlindScreen>
                     children: [
                       const _WindowBackgroundWidget(),
                       ...[
-                        for (var i = 0; i < 5; i++)
+                        for (var i = 0; i < 10; i++)
                           ValueListenableBuilder<double>(
                             valueListenable: blindPosition,
                             builder: (context, position, child) {
                               return Positioned(
-                                top: 50 + 25 * position * (i + 1),
+                                top: 25 * 10 * position.clamp(0, 0.1 * i),
                                 left: 0,
                                 right: 0,
                                 child: child!,
