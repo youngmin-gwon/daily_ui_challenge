@@ -10,12 +10,13 @@ class CurtainBlindScreen extends StatefulWidget {
 
 class _CurtainBlindScreenState extends State<CurtainBlindScreen>
     with SingleTickerProviderStateMixin {
-  final GlobalKey _key = GlobalKey();
-
   Color iconTheme = Colors.black;
 
   final blindAngle = ValueNotifier<double>(0);
   final blindPosition = ValueNotifier<double>(0);
+
+  final _blindCount = 13;
+  final _blindHeight = 22.0;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,6 @@ class _CurtainBlindScreenState extends State<CurtainBlindScreen>
                   ],
                 ),
                 child: Container(
-                  key: _key,
                   margin: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -65,18 +65,22 @@ class _CurtainBlindScreenState extends State<CurtainBlindScreen>
                     children: [
                       const _WindowBackgroundWidget(),
                       ...[
-                        for (var i = 0; i < 10; i++)
+                        for (var i = 0; i < 15; i++)
                           ValueListenableBuilder<double>(
                             valueListenable: blindPosition,
                             builder: (context, position, child) {
                               return Positioned(
-                                top: 25 * 10 * position.clamp(0, 0.1 * i),
+                                top: 10 +
+                                    (_blindHeight + 5) *
+                                        _blindCount *
+                                        position.clamp(0, 0.1 / 15 * 10 * i),
                                 left: 0,
                                 right: 0,
                                 child: child!,
                               );
                             },
                             child: _WindowBlindWidget(
+                              height: _blindHeight,
                               blindAngle: blindAngle,
                             ),
                           ),
@@ -187,9 +191,11 @@ class _WindowBlindWidget extends StatelessWidget {
   const _WindowBlindWidget({
     Key? key,
     required this.blindAngle,
+    this.height = 22,
   }) : super(key: key);
 
   final ValueNotifier<double> blindAngle;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +215,7 @@ class _WindowBlindWidget extends StatelessWidget {
             left: 13,
             right: 13,
           ),
-          height: 22,
+          height: height,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.white,
