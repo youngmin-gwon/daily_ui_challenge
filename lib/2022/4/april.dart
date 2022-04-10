@@ -1,3 +1,4 @@
+import 'package:daily_ui/2022/4/10_stacked_cards/ui/stacked_card_screen.dart';
 import 'package:daily_ui/2022/4/1_shimmer_animation/shimmer_animation_screen.dart';
 import 'package:daily_ui/2022/4/2_shimmer_text_animation/shimmer_animation_text_screen.dart';
 import 'package:daily_ui/2022/4/3_expandable_fab/expandable_fab_screen.dart';
@@ -61,6 +62,17 @@ class AprilScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("4. Curtain Blind Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const StackedCardScreen(),
+                    ),
+                  );
+                },
+                child: const Text("10. Stacked Card Animation"),
               ),
             ],
           ),
