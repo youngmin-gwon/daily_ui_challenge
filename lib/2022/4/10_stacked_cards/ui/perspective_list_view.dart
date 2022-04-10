@@ -70,50 +70,64 @@ class _PerspectiveListViewState extends State<PerspectiveListView> {
           PointerDeviceKind.mouse,
         },
       ),
-      child: Stack(
-        children: [
-          // Perspective Items
-          Padding(
-            padding: widget.padding,
-            child: _PerspectiveItems(
-              heightItem: widget.itemExtent,
-              currentIndex: _currentIndex,
-              children: widget.children,
-              generateItems: widget.visualizedItems - 1,
-              pagePercent: _pagePercent,
-            ),
-          ),
-          // Pack Item Shade
-          Positioned.fill(
-              child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  widget.backItemsShadowColor.withOpacity(.8),
-                  widget.backItemsShadowColor.withOpacity(.0),
-                ],
+      child: LayoutBuilder(builder: (context, constraints) {
+        final height = constraints.maxHeight;
+        return Stack(
+          children: [
+            // Perspective Items
+            Padding(
+              padding: widget.padding,
+              child: _PerspectiveItems(
+                heightItem: widget.itemExtent,
+                currentIndex: _currentIndex,
+                children: widget.children,
+                generateItems: widget.visualizedItems - 1,
+                pagePercent: _pagePercent,
               ),
             ),
-          )),
-          // Void Page view
-          PageView.builder(
-            scrollDirection: Axis.vertical,
-            controller: _pageController,
-            physics: const BouncingScrollPhysics(),
-            onPageChanged: (value) {
-              if (widget.onChangeItem != null) {
-                widget.onChangeItem!.call(value);
-              }
-            },
-            itemBuilder: (context, index) {
-              return const SizedBox();
-            },
-            itemCount: Contact.contacts.length,
-          ),
-        ],
-      ),
+            // Pack Item Shade
+            Positioned.fill(
+                child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    widget.backItemsShadowColor.withOpacity(.8),
+                    widget.backItemsShadowColor.withOpacity(.0),
+                  ],
+                ),
+              ),
+            )),
+            // Void Page view
+            PageView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _pageController,
+              physics: const BouncingScrollPhysics(),
+              onPageChanged: (value) {
+                if (widget.onChangeItem != null) {
+                  widget.onChangeItem!.call(value);
+                }
+              },
+              itemBuilder: (context, index) {
+                return const SizedBox();
+              },
+              itemCount: Contact.contacts.length,
+            ),
+            // On tap item area
+            Positioned.fill(
+              top: height - widget.itemExtent,
+              child: GestureDetector(
+                onHorizontalDragCancel: () {
+                  if (widget.onTapFrontItem != null) {
+                    widget.onTapFrontItem!.call(_currentIndex);
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

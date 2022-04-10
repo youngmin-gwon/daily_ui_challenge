@@ -71,9 +71,9 @@ class ContactCard extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.person_outlined,
-                        size: 40,
+                        size: 30,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Flexible(
                         child: Text.rich(
                           TextSpan(
@@ -82,7 +82,7 @@ class ContactCard extends StatelessWidget {
                               TextSpan(
                                 text: '\n${contact.role}',
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.normal,
                                   height: 1.5,
                                 ),
@@ -90,7 +90,7 @@ class ContactCard extends StatelessWidget {
                             ],
                           ),
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -104,13 +104,13 @@ class ContactCard extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.home_outlined,
-                        size: 40,
+                        size: 30,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         contact.address,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           color: Colors.deepPurple,
                         ),
                       )
@@ -123,13 +123,13 @@ class ContactCard extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.phone_outlined,
-                        size: 40,
+                        size: 30,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         contact.phone,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -142,23 +142,23 @@ class ContactCard extends StatelessWidget {
                     children: [
                       const Icon(
                         Icons.email_outlined,
-                        size: 40,
+                        size: 30,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             contact.email,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               color: Colors.deepPurple,
                             ),
                           ),
                           Text(
                             contact.website,
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               color: Colors.deepPurple,
                             ),
                           ),
