@@ -62,6 +62,7 @@ class _RotatingCharacterScreenState extends State<RotatingCharacterScreen>
     return Theme(
       data: ThemeData.dark(),
       child: Scaffold(
+        appBar: AppBar(),
         body: SizedBox.expand(
           child: Stack(
             alignment: Alignment.center,
