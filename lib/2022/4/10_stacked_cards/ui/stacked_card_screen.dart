@@ -48,7 +48,7 @@ class StackedCardScreen extends StatelessWidget {
           visualizedItems: 8,
           itemExtent: MediaQuery.of(context).size.height * .33,
           initialIndex: 7,
-          backItemsShadowColor: Theme.of(context).scaffoldBackgroundColor,
+          backItemsShadowColor: Theme.of(context).shadowColor,
           padding: const EdgeInsets.all(10),
           children: List.generate(Contact.contacts.length, (index) {
             final borderColor = Colors.accents[index % Colors.accents.length];
