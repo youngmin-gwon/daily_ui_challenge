@@ -28,6 +28,12 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^1.0.0
+  build_runner: 
+  flutter_gen_runner: 
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 80
 
 flutter:
 
@@ -36,6 +42,15 @@ flutter:
   assets:
     - assets/images/
     - assets/svg/
+    - assets/fonts/
+
+  fonts:
+    - family: Silkscreen
+      fonts:
+        - asset: assets/fonts/slkscr.ttf
+        - asset: assets/fonts/slkscrb.ttf
+        - asset: assets/fonts/slkscre.ttf
+        - asset: assets/fonts/slkscreb.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
