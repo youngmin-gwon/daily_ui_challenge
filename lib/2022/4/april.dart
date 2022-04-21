@@ -4,6 +4,7 @@ import 'package:daily_ui/2022/4/18_cylinder_animation/cylinder_animation_screen.
 import 'package:daily_ui/2022/4/1_shimmer_animation/shimmer_animation_screen.dart';
 import 'package:daily_ui/2022/4/20_splash_tap/splash_tap_screen.dart';
 import 'package:daily_ui/2022/4/21_perlin_noise/perlin_noise_screen.dart';
+import 'package:daily_ui/2022/4/22_wave_slider/wave_slider_screen.dart';
 import 'package:daily_ui/2022/4/2_shimmer_text_animation/shimmer_animation_text_screen.dart';
 import 'package:daily_ui/2022/4/3_expandable_fab/expandable_fab_screen.dart';
 import 'package:daily_ui/2022/4/4_curtain_blind_animation/curtain_blind_screen.dart';
@@ -121,6 +122,17 @@ class AprilScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("21. Perlin Background Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const WaveSliderScreen(),
+                    ),
+                  );
+                },
+                child: const Text("22. Wave Slider Animation"),
               ),
             ],
           ),
