@@ -118,6 +118,9 @@ class _SketchPainter extends CustomPainter {
     this.block,
   });
 
+  static const xGap = 80;
+  static const yGap = 60;
+
   static final _ballPaint = Paint()
     ..color = Colors.amber
     ..style = PaintingStyle.fill;
@@ -126,23 +129,50 @@ class _SketchPainter extends CustomPainter {
     ..color = const Color(0xFFFF384E)
     ..style = PaintingStyle.fill;
 
+  static final _shadowPaint = Paint()
+    ..color = const Color(0xFF190F3A)
+    ..style = PaintingStyle.fill;
+
+  static final _wallPaint = Paint()
+    ..color = const Color(0xFF9D0919)
+    ..style = PaintingStyle.fill;
+
   @override
   void paint(Canvas canvas, Size size) {
+    if (block != null) {
+      canvas.drawRect(
+        Rect.fromCenter(
+          center: Offset(block!.x, block!.y),
+          width: block!.width,
+          height: block!.height,
+        ),
+        _blockPaint,
+      );
+
+      final _shadowPath = Path();
+      _shadowPath.moveTo(block!.maxX, block!.maxY);
+      _shadowPath.lineTo(block!.maxX - xGap, block!.maxY + yGap);
+      _shadowPath.lineTo(block!.minX - xGap, block!.maxY + yGap);
+      _shadowPath.lineTo(block!.minX, block!.maxY);
+      _shadowPath.close();
+
+      canvas.drawPath(_shadowPath, _shadowPaint);
+
+      final _wallPath = Path();
+      _wallPath.moveTo(block!.minX, block!.minY);
+      _wallPath.lineTo(block!.minX, block!.maxY);
+      _wallPath.lineTo(block!.minX - xGap, block!.maxY + yGap);
+      _wallPath.lineTo(block!.minX - xGap, block!.maxY + yGap - block!.height);
+      _wallPath.close();
+
+      canvas.drawPath(_wallPath, _wallPaint);
+    }
+
     canvas.drawCircle(
       Offset(ball.x, ball.y),
       ball.radius,
       _ballPaint,
     );
-
-    if (block != null) {
-      canvas.drawRect(
-        Rect.fromCenter(
-            center: Offset(block!.x, block!.y),
-            width: block!.width,
-            height: block!.height),
-        _blockPaint,
-      );
-    }
   }
 
   @override
@@ -243,7 +273,11 @@ class Block {
   late double _y;
 
   double get x => _x;
+  double get minX => _x - _width / 2;
+  double get maxX => _x + _width / 2;
   double get y => _y;
+  double get minY => _y - _height / 2;
+  double get maxY => _y + _height / 2;
   double get height => _height;
   double get width => _width;
 
