@@ -9,6 +9,7 @@ import 'package:daily_ui/2022/4/23_bouncing_ball/bouncing_ball_screen.dart';
 import 'package:daily_ui/2022/4/24_wave_animation/wave_animation_screen.dart';
 import 'package:daily_ui/2022/4/28_metaball/metaball_screen.dart';
 import 'package:daily_ui/2022/4/2_shimmer_text_animation/shimmer_animation_text_screen.dart';
+import 'package:daily_ui/2022/4/30_raw_rgba_animation/raw_rgba_animation_screen.dart';
 import 'package:daily_ui/2022/4/3_expandable_fab/expandable_fab_screen.dart';
 import 'package:daily_ui/2022/4/4_curtain_blind_animation/curtain_blind_screen.dart';
 import 'package:flutter/material.dart';
@@ -169,6 +170,17 @@ class AprilScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("28. Metaballs"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const RawRgbaAnimationScreen(),
+                    ),
+                  );
+                },
+                child: const Text("30. Raw RGBA animation"),
               ),
             ],
           ),
