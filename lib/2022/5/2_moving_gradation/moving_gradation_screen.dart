@@ -19,8 +19,16 @@ class _MovingGradationScreenState extends State<MovingGradationScreen>
 
   static final _random = math.Random();
 
-  static const _blobCount = 6, _blobSpeed = 7.0, _blobRadius = 50.0;
-  static const _minRadius = 100.0, _maxRadius = 300.0;
+  static const List<Color> _colors = [
+    Color.fromRGBO(45, 74, 227, 1),
+    Color.fromRGBO(250, 255, 89, 1),
+    Color.fromRGBO(255, 104, 248, 1),
+    Color.fromRGBO(44, 209, 252, 1),
+    Color.fromRGBO(54, 233, 84, 1),
+  ];
+
+  static const _blobCount = 20, _blobSpeed = 4.0;
+  static const _minRadius = 400.0, _maxRadius = 900.0;
 
   @override
   void initState() {
@@ -38,6 +46,7 @@ class _MovingGradationScreenState extends State<MovingGradationScreen>
                 _random.nextDouble() * math.pi * 2, _blobSpeed),
             minRadius: _minRadius,
             maxRadius: _maxRadius,
+            color: _colors[i % _colors.length],
           ),
         );
       }
@@ -62,6 +71,7 @@ class _MovingGradationScreenState extends State<MovingGradationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -85,18 +95,34 @@ class MovingGradientPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()
-        ..color = Colors.black
-        ..blendMode = ui.BlendMode.srcOver,
-    );
-
+    // canvas.drawRect(
+    //     Rect.fromLTWH(
+    //       0,
+    //       0,
+    //       size.width,
+    //       size.height,
+    //     ),
+    //     Paint()..color = Colors.black);
     for (var blob in blobs) {
+      final shader = ui.Gradient.radial(
+        blob.offset,
+        blob.radius,
+        [
+          blob.color,
+          blob.color.withOpacity(0),
+        ],
+        [
+          0.01,
+          1,
+        ],
+      );
       canvas.drawCircle(
         blob.offset,
         blob.radius,
-        Paint()..color = Colors.white,
+        Paint()
+          ..color = blob.color
+          ..shader = shader
+          ..blendMode = ui.BlendMode.saturation,
       );
     }
   }
@@ -113,6 +139,7 @@ class _Blob {
 
   final double minRadius;
   final double maxRadius;
+  final Color color;
 
   static final _random = math.Random();
 
@@ -126,6 +153,7 @@ class _Blob {
     required this.velocity,
     required this.minRadius,
     required this.maxRadius,
+    required this.color,
   }) {
     _radius = getRadius(_sinValue);
   }
