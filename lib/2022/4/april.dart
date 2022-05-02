@@ -8,6 +8,7 @@ import 'package:daily_ui/2022/4/22_wave_slider/wave_slider_screen.dart';
 import 'package:daily_ui/2022/4/23_bouncing_ball/bouncing_ball_screen.dart';
 import 'package:daily_ui/2022/4/24_wave_animation/wave_animation_screen.dart';
 import 'package:daily_ui/2022/4/28_metaball/metaball_screen.dart';
+import 'package:daily_ui/2022/4/29_metaball_without_package/metaball_without_package_screen.dart';
 import 'package:daily_ui/2022/4/2_shimmer_text_animation/shimmer_animation_text_screen.dart';
 import 'package:daily_ui/2022/4/30_raw_rgba_animation/raw_rgba_animation_screen.dart';
 import 'package:daily_ui/2022/4/3_expandable_fab/expandable_fab_screen.dart';
@@ -170,6 +171,18 @@ class AprilScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("28. Metaballs"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const MetaballWithoutPackageScreen(),
+                    ),
+                  );
+                },
+                child: const Text("29. Metaballs without package"),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
