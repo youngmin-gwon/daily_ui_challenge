@@ -23,6 +23,7 @@ dependencies:
   transparent_image: ^2.0.0
   faker: ^2.0.0
   funvas: ^0.1.6+6
+  google_fonts: ^2.3.2
 
 dev_dependencies:
   flutter_test:

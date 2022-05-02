@@ -1,6 +1,7 @@
 import 'package:daily_ui/2022/1/january.dart';
 import 'package:daily_ui/2022/3/march.dart';
 import 'package:daily_ui/2022/4/april.dart';
+import 'package:daily_ui/2022/5/may.dart';
 import 'package:flutter/material.dart';
 
 import '2/february.dart';
@@ -68,6 +69,19 @@ class Board2022Screen extends StatelessWidget {
                 },
                 child: const Text(
                   "April",
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const MayScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "May",
                 ),
               ),
               const SizedBox(height: 12),
