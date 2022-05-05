@@ -245,7 +245,7 @@ class Painter extends CustomPainter {
 
     // Create particles initially and when all particles have reached the
     // destination.
-    if (_particles?.isEmpty != false) {
+    if (_particles.isEmpty != false) {
       _createParticles(size);
     }
 
