@@ -5,6 +5,7 @@ import 'package:daily_ui/2022/5/4_particle_sweep/particle_sweep_screen.dart';
 import 'package:daily_ui/2022/5/5_rotating_polygon/rotating_polygon_screen.dart';
 import 'package:daily_ui/2022/5/6_glitch/glitch_screen.dart';
 import 'package:daily_ui/2022/5/7_spark/spark_animation_screen.dart';
+import 'package:daily_ui/2022/5/9_ninja_fruit/ninja_fruit_screen.dart';
 import 'package:flutter/material.dart';
 
 class MayScreen extends StatelessWidget {
@@ -95,6 +96,17 @@ class MayScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("7. Spark Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const NinjaFruitScreen(),
+                    ),
+                  );
+                },
+                child: const Text("9. Ninja Fruit Animation"),
               ),
             ],
           ),
