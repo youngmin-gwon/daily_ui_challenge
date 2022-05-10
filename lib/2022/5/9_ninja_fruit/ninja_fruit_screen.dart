@@ -1,6 +1,8 @@
-import 'package:daily_ui/2022/5/9_ninja_fruit/models/fruit.dart';
-import 'package:daily_ui/2022/5/9_ninja_fruit/models/touch_slice.dart';
 import 'package:flutter/material.dart';
+
+import 'models/fruit.dart';
+import 'models/fruit_part.dart';
+import 'models/touch_slice.dart';
 
 class NinjaFruitScreen extends StatefulWidget {
   const NinjaFruitScreen({Key? key}) : super(key: key);
@@ -12,6 +14,7 @@ class NinjaFruitScreen extends StatefulWidget {
 class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
   TouchSlice? touchSlice;
   final List<Fruit> fruits = [];
+  final List<FruitPart> fruitParts = [];
 
   @override
   void initState() {
@@ -62,10 +65,34 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
 
         if (secondPointOutside && !fruit.isPointInside(point)) {
           fruits.remove(fruit);
+          _turnFruitIntoParts(fruit);
           break;
         }
       }
     }
+  }
+
+  void _turnFruitIntoParts(Fruit fruit) {
+    FruitPart leftFruitPart = FruitPart(
+      position: Offset(fruit.position.dx - fruit.width / 8, fruit.position.dy),
+      width: fruit.width / 2,
+      height: fruit.height,
+      isLeft: true,
+    );
+
+    FruitPart rightFruitPart = FruitPart(
+      position: Offset(fruit.position.dx + fruit.width / 8 + fruit.width / 4,
+          fruit.position.dy),
+      width: fruit.width / 2,
+      height: fruit.height,
+      isLeft: false,
+    );
+
+    setState(() {
+      fruitParts.add(leftFruitPart);
+      fruitParts.add(rightFruitPart);
+      fruits.remove(fruit);
+    });
   }
 
   @override
@@ -91,6 +118,7 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
     widgetsOnStack.add(_getBackground());
     widgetsOnStack.add(_getSlice());
 
+    widgetsOnStack.addAll(_getFruitsParts());
     widgetsOnStack.addAll(_getFruits());
     widgetsOnStack.add(_getGestureDetector());
 
@@ -144,6 +172,22 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
     );
   }
 
+  List<Widget> _getFruitsParts() {
+    final List<Widget> list = <Widget>[];
+
+    for (var fruitPart in fruitParts) {
+      list.add(
+        Positioned(
+          top: fruitPart.position.dy,
+          left: fruitPart.position.dx,
+          child: _getMelonCut(fruitPart),
+        ),
+      );
+    }
+
+    return list;
+  }
+
   List<Widget> _getFruits() {
     final List<Widget> list = [];
 
@@ -152,16 +196,30 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
         Positioned(
           top: fruit.position.dy,
           left: fruit.position.dx,
-          child: Container(
-            width: fruit.width,
-            height: fruit.height,
-            color: Colors.white,
-          ),
+          child: _getMelon(fruit),
         ),
       );
     }
 
     return list;
+  }
+
+  Widget _getMelon(Fruit fruit) {
+    return Image.asset(
+      "assets/images/melon_uncut.png",
+      height: 80,
+      fit: BoxFit.fitHeight,
+    );
+  }
+
+  Widget _getMelonCut(FruitPart fruitPart) {
+    return Image.asset(
+      fruitPart.isLeft
+          ? "assets/images/melon_cut.png"
+          : "assets/images/melon_cut_right.png",
+      height: 80,
+      fit: BoxFit.fitHeight,
+    );
   }
 }
 
