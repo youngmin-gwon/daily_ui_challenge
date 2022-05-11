@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'models/fruit.dart';
 import 'models/fruit_part.dart';
@@ -11,7 +12,10 @@ class NinjaFruitScreen extends StatefulWidget {
   State<NinjaFruitScreen> createState() => _NinjaFruitScreenState();
 }
 
-class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
+class _NinjaFruitScreenState extends State<NinjaFruitScreen>
+    with SingleTickerProviderStateMixin {
+  late Ticker _ticker;
+
   TouchSlice? touchSlice;
   final List<Fruit> fruits = [];
   final List<FruitPart> fruitParts = [];
@@ -20,12 +24,32 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
   void initState() {
     super.initState();
     fruits.add(
-      const Fruit(
-        position: Offset(100, 100),
+      Fruit(
+        position: const Offset(0, 200),
         width: 80,
         height: 80,
+        additionalForce: const Offset(5, -10),
       ),
     );
+    _ticker = createTicker(_onTick)..start();
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
+
+  void _onTick(Duration elapsed) {
+    setState(() {
+      for (var fruit in fruits) {
+        fruit.applyGravity();
+      }
+
+      for (var fruitPart in fruitParts) {
+        fruitPart.applyGravity();
+      }
+    });
   }
 
   void _setNewSlice(ScaleStartDetails details) {
@@ -78,6 +102,8 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
       width: fruit.width / 2,
       height: fruit.height,
       isLeft: true,
+      additionalForce:
+          Offset(fruit.additionalForce.dx - 1, fruit.additionalForce.dy - 5),
     );
 
     FruitPart rightFruitPart = FruitPart(
@@ -86,6 +112,8 @@ class _NinjaFruitScreenState extends State<NinjaFruitScreen> {
       width: fruit.width / 2,
       height: fruit.height,
       isLeft: false,
+      additionalForce:
+          Offset(fruit.additionalForce.dx + 1, fruit.additionalForce.dy - 5),
     );
 
     setState(() {

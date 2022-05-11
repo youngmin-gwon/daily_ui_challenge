@@ -4,7 +4,7 @@ abstract class GravitationalObject {
   Offset position;
   double gravitySpeed;
   Offset additionalForce;
-  double _gravity = 1.0;
+  final _gravity = 1.0;
 
   GravitationalObject({
     required this.position,
@@ -16,7 +16,7 @@ abstract class GravitationalObject {
     gravitySpeed += _gravity;
     position = Offset(
       position.dx + additionalForce.dx,
-      position.dy + additionalForce.dy,
+      position.dy + gravitySpeed + additionalForce.dy,
     );
   }
 }
