@@ -13,10 +13,12 @@ class FruitPart extends GravitationalObject {
     required this.height,
     required this.isLeft,
     double gravitySpeed = 0.0,
+    double rotation = 0.0,
     Offset additionalForce = const Offset(0, 0),
   }) : super(
           position: position,
           gravitySpeed: gravitySpeed,
           additionalForce: additionalForce,
+          rotation: rotation,
         );
 }
