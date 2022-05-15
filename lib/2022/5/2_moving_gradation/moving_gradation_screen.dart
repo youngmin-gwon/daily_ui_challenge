@@ -34,7 +34,7 @@ class _MovingGradationScreenState extends State<MovingGradationScreen>
   void initState() {
     super.initState();
     _ticker = createTicker(_onTick)..start();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       for (var i = 0; i < _blobCount; i++) {
         _blobs.add(
           _Blob(

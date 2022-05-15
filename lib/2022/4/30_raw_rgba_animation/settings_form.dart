@@ -18,7 +18,7 @@ class _SettingsFormState extends State<SettingsForm> {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         final settings = RgbaSettingsScope.of(context);
         _textEditingController.text = settings.text;

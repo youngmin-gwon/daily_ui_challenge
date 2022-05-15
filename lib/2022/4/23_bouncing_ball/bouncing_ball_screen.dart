@@ -42,7 +42,7 @@ class _BouncingBallScreenState extends State<BouncingBallScreen>
   void initState() {
     super.initState();
     _ticker = createTicker(_onTick)..start();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       size = MediaQuery.of(context).size;
       final radius = (_maxRadius - minValue) * _random.nextDouble() + minValue;
       // final xPos = _random.nextDouble() * (size.width - 2 * radius) + radius;

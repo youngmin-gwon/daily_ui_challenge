@@ -29,7 +29,7 @@ class _MetaballWithoutPackageScreenState
   void initState() {
     super.initState();
     _ticker = createTicker(_onTick)..start();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       size = MediaQuery.of(context).size;
       for (var i = 0; i < blobCount; i++) {
         _blobs.add(

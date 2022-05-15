@@ -1,4 +1,3 @@
-import 'dart:ui' as ui;
 import 'package:daily_ui/2022/4/30_raw_rgba_animation/rgba_point_notifier.dart';
 import 'package:daily_ui/2022/4/30_raw_rgba_animation/rgba_point_scope.dart';
 import 'package:daily_ui/2022/4/30_raw_rgba_animation/rgba_settings.dart';
@@ -21,7 +20,7 @@ class _ScreenShotState extends State<ScreenShot> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _setArray();
     });
   }

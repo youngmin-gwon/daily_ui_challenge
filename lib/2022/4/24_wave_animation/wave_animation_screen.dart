@@ -22,7 +22,7 @@ class _WaveAnimationScreenState extends State<WaveAnimationScreen>
   void initState() {
     super.initState();
     _ticker = createTicker(_tickDraw)..start();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       size = MediaQuery.of(context).size;
       waveGroup.width = size.width;
       waveGroup.height = size.height;

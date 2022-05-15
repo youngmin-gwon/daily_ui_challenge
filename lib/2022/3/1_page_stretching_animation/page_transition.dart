@@ -38,7 +38,7 @@ class _PageTransitionExampleState extends State<PageTransitionExample>
       ),
     );
     _setTweens();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _setCardSize(context);
         _setTweens();

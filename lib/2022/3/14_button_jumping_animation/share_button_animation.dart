@@ -123,7 +123,7 @@ class _SocialShareButtonState extends State<SocialShareButton>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _buttonWidth = _buttonKey.currentContext!.size!.width + 14;
       });

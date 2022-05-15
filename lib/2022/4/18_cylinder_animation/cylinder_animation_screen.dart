@@ -47,7 +47,7 @@ class _CylinderPolygonState extends State<CylinderPolygon> {
     /// equation using right triangle law: x = 2*r * tan(theta/2)
     _faceWidth = 2 * widget.radius * math.tan((2 * math.pi / widget.face) / 2);
 
-    WidgetsBinding.instance!.addPostFrameCallback(
+    WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
         final image = await rootBundle.load("assets/images/campbell_label.jpg");
         var decodedImage =

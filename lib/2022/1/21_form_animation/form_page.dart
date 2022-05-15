@@ -26,7 +26,7 @@ class FormPage extends StatelessWidget {
     if (MediaQuery.of(context).viewInsets.bottom > 0) {
       SystemChannels.textInput.invokeMethod("TextInput.hide");
     }
-    WidgetsBinding.instance?.focusManager.primaryFocus?.unfocus();
+    WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
   }
 
   void _handleBackGesture(BuildContext context) {

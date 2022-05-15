@@ -175,5 +175,7 @@ class CountryData {
 }
 
 enum InputType { text, email, number, telephone }
+
 enum CreditCardInputType { number, expirationData, securityCode }
+
 enum CreditCardNetwork { visa, mastercard, amex }

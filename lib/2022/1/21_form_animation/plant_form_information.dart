@@ -185,7 +185,7 @@ class _PlantFormInformationState extends State<PlantFormInformation>
       onItemChange(name: name, value: value);
     }
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         formCompletion = countValidItems() / validInputsMap.length;
       });

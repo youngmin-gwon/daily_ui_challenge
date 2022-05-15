@@ -36,7 +36,7 @@ class _RotatingCharacterScreenState extends State<RotatingCharacterScreen>
       duration: const Duration(milliseconds: 4000),
     )..forward();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialAnimation();
     });
   }
