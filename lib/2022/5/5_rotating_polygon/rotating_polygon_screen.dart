@@ -16,10 +16,9 @@ class _RotatingPolygonScreenState extends State<RotatingPolygonScreen> {
     size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: CustomPaint(
-          painter: _PolygonPainter(),
-        ),
+      body: CustomPaint(
+        painter: _PolygonPainter(),
+        size: Size.infinite,
       ),
     );
   }
@@ -31,11 +30,11 @@ class _PolygonPainter extends CustomPainter {
     final polygon = Polygon(
       x: size.width / 2,
       y: size.height / 2,
-      radius: 150,
+      radius: 50,
       sides: 3,
     );
 
-    final path = polygon.createPath(canvas);
+    final path = polygon.createPath(canvas, size);
     canvas.drawPath(path, Paint()..color = Colors.black);
   }
 
@@ -60,14 +59,15 @@ class Polygon {
     required this.sides,
   });
 
-  Path createPath(Canvas canvas) {
+  Path createPath(Canvas canvas, Size size) {
     final path = Path();
     final angle = 2 * math.pi / sides;
-    path.moveTo(radius * math.cos(0), radius * math.sin(0));
+    path.moveTo(size.width / 2, size.height);
+    path.relativeMoveTo(radius * math.cos(0), radius * math.sin(0));
     for (int i = 1; i <= sides; i++) {
       double x = radius * math.cos(angle * i);
       double y = radius * math.sin(angle * i);
-      path.lineTo(x, y);
+      path.relativeLineTo(x, y);
     }
     path.close();
 
