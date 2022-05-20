@@ -9,6 +9,26 @@ class DisableButtonScreen extends StatefulWidget {
 
 class _DisableButtonScreenState extends State<DisableButtonScreen> {
   bool _isButtonActivated = false;
+  bool _showClearButton = false;
+  late TextEditingController _textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController()
+      ..addListener(() {
+        setState(() {
+          _showClearButton = _textEditingController.text.isNotEmpty;
+          _isButtonActivated = _textEditingController.text.isNotEmpty;
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +38,101 @@ class _DisableButtonScreenState extends State<DisableButtonScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: Center(
-        child: DeactivatableButton(
-          isDeactivated: _isButtonActivated,
-          child: MaterialButton(
-            onPressed: () {},
-            textColor: Colors.white,
-            color: Colors.red,
-            disabledColor: Colors.blue,
-            disabledTextColor: Colors.white,
-          ),
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // const ClearableTextField(),
+            TextField(
+              controller: _textEditingController,
+              decoration: InputDecoration(
+                hintText: "show a beatiful word",
+                suffixIcon: _buildClearButton(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _isButtonActivated
+                  ? () {
+                      print("taptap");
+                    }
+                  : () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("not activated")));
+                    },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  _isButtonActivated ? Colors.blue : Colors.grey,
+                ),
+                splashFactory:
+                    _isButtonActivated ? InkSplash.splashFactory : null,
+              ),
+              child: const Text("Click"),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget? _buildClearButton() {
+    return _showClearButton
+        ? IconButton(
+            onPressed: _textEditingController.clear,
+            icon: const Icon(Icons.clear))
+        : null;
+  }
+}
+
+class ClearableTextField extends StatefulWidget {
+  const ClearableTextField({Key? key}) : super(key: key);
+
+  @override
+  State<ClearableTextField> createState() => _ClearableTextFieldState();
+}
+
+class _ClearableTextFieldState extends State<ClearableTextField> {
+  late TextEditingController _textEditingController;
+
+  bool _showClearButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController()
+      ..addListener(() {
+        setState(() {
+          _showClearButton = _textEditingController.text.isNotEmpty;
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _textEditingController,
+      decoration: InputDecoration(
+        hintText: "Write beatiful words",
+        suffixIcon: _buildClearIcon(),
+      ),
+    );
+  }
+
+  Widget? _buildClearIcon() {
+    return _showClearButton
+        ? IconButton(
+            onPressed: _textEditingController.clear,
+            icon: const Icon(Icons.clear),
+          )
+        : null;
   }
 }
 
