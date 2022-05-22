@@ -2,6 +2,7 @@ import 'package:daily_ui/2022/5/18_progress_indicator/progress_indicator_screen.
 import 'package:daily_ui/2022/5/19_disable_button/disable_button_screen.dart';
 import 'package:daily_ui/2022/5/1_neon_light/neon_light_screen.dart';
 import 'package:daily_ui/2022/5/20_overlay/overlay_screen.dart';
+import 'package:daily_ui/2022/5/21_glow/glow_screen.dart';
 import 'package:daily_ui/2022/5/2_moving_gradation/moving_gradation_screen.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_practice.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_sweep_screen.dart';
@@ -143,6 +144,17 @@ class MayScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("20. Overlay Screen"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const GlowScreen(),
+                    ),
+                  );
+                },
+                child: const Text("21. Glow Effect 2"),
               ),
             ],
           ),
