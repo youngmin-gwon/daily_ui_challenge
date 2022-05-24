@@ -100,7 +100,7 @@ class GlowPainter extends CustomPainter {
 
   void _drawStreak(
       double t, double r, double pr, double offset, Canvas canvas) {
-    const n = 9;
+    const n = 14;
     const delay = 0.4;
     const opacity = 0xaa / 0xff;
     for (var i = n; i >= 0; i--) {

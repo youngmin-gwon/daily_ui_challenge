@@ -4,6 +4,7 @@ import 'package:daily_ui/2022/5/1_neon_light/neon_light_screen.dart';
 import 'package:daily_ui/2022/5/20_overlay/overlay_screen.dart';
 import 'package:daily_ui/2022/5/21_glow/glow_screen.dart';
 import 'package:daily_ui/2022/5/22_torus/torus_screen.dart';
+import 'package:daily_ui/2022/5/23_sequantial_rotate/sequantial_rotate_screen.dart';
 import 'package:daily_ui/2022/5/2_moving_gradation/moving_gradation_screen.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_practice.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_sweep_screen.dart';
@@ -167,6 +168,17 @@ class MayScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("22. Torus"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SequantialRotateScreen(),
+                    ),
+                  );
+                },
+                child: const Text("23. Sequantial Rotate"),
               ),
             ],
           ),
