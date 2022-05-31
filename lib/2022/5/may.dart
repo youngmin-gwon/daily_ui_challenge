@@ -9,6 +9,7 @@ import 'package:daily_ui/2022/5/24_star/star_screen.dart';
 import 'package:daily_ui/2022/5/25_flock/flock_screen.dart';
 import 'package:daily_ui/2022/5/2_moving_gradation/moving_gradation_screen.dart';
 import 'package:daily_ui/2022/5/30_changing_shape/changing_shape_screen.dart';
+import 'package:daily_ui/2022/5/31_starbucks_reward_star/starbucks_reward_star_screen.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_practice.dart';
 import 'package:daily_ui/2022/5/4_particle_sweep/particle_sweep_screen.dart';
 import 'package:daily_ui/2022/5/5_rotating_polygon/rotating_polygon_screen.dart';
@@ -215,6 +216,17 @@ class MayScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("30. Changing Shape Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const StarbucksRewardStarScreen(),
+                    ),
+                  );
+                },
+                child: const Text("31. Starbucks Reward Star Animation"),
               ),
             ],
           ),
