@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
