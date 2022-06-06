@@ -1,4 +1,5 @@
-import 'package:daily_ui/2022/6/3/drag_animation_screen.dart';
+import 'package:daily_ui/2022/6/3_drag/drag_animation_screen.dart';
+import 'package:daily_ui/2022/6/4_spray/spray_screen.dart';
 import 'package:flutter/material.dart';
 
 class JuneScreen extends StatelessWidget {
@@ -23,7 +24,17 @@ class JuneScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("3. Drag Animation"),
-              )
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const SprayScreen()),
+                  );
+                },
+                child: const Text("4. Spray Animation"),
+              ),
             ],
           ),
         ),
