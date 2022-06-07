@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class SprayScreen extends StatefulWidget {
   const SprayScreen({Key? key}) : super(key: key);
@@ -10,23 +9,33 @@ class SprayScreen extends StatefulWidget {
 
 class _SprayScreenState extends State<SprayScreen>
     with SingleTickerProviderStateMixin {
-  List<Offset> points = [];
+  DrawLine? line;
 
   void _onPanStart(DragStartDetails details) {
     print('User started drawing');
     final box = context.findRenderObject() as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    print(point);
+
+    setState(() {
+      line = DrawLine(points: [point], color: Colors.black, width: 2);
+    });
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
     final box = context.findRenderObject() as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    print(point);
+
+    final path = List<Offset>.from(line!.points)..add(point);
+
+    setState(() {
+      line = DrawLine(points: path, color: Colors.black, width: 2);
+    });
   }
 
   void _onPanEnd(DragEndDetails details) {
-    print("User ended drawing");
+    setState(() {
+      print("User ended drawing");
+    });
   }
 
   @override
@@ -61,7 +70,7 @@ class _SprayScreenState extends State<SprayScreen>
     return CustomPaint(
       size: Size.infinite,
       painter: SprayPainter(
-        points: points,
+        lines: [line!],
       ),
     );
   }
@@ -76,40 +85,52 @@ class _SprayScreenState extends State<SprayScreen>
 }
 
 class SprayPainter extends CustomPainter {
-  final List<Offset> points;
+  final List<DrawLine> lines;
 
   const SprayPainter({
-    required this.points,
+    required this.lines,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (points.length < 2) {
-      return;
-    }
+    // if (points.length < 2) {
+    //   return;
+    // }
 
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+    // final paint = Paint()
+    //   ..color = Colors.black
+    //   ..style = PaintingStyle.stroke
+    //   ..strokeWidth = 2;
 
-    Path path = Path();
+    // Path path = Path();
 
-    canvas.save();
+    // canvas.save();
 
-    path.moveTo(points[0].dx, points[0].dy);
+    // path.moveTo(points[0].dx, points[0].dy);
 
-    for (final point in points) {
-      path.lineTo(point.dx, point.dy);
-    }
+    // for (final point in points) {
+    //   path.lineTo(point.dx, point.dy);
+    // }
 
-    canvas.drawPath(path, paint);
+    // canvas.drawPath(path, paint);
 
-    canvas.restore();
+    // canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return true;
   }
+}
+
+class DrawLine {
+  final List<Offset> points;
+  final Color color;
+  final double width;
+
+  const DrawLine({
+    required this.points,
+    required this.color,
+    required this.width,
+  });
 }
