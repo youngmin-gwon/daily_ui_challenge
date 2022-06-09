@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:daily_ui/2022/6/4_spray/drawn_line.dart';
+import 'package:daily_ui/2022/6/4_drawing/drawn_line.dart';
+import 'package:daily_ui/2022/6/4_drawing/hand_drawing_painter.dart';
 import 'package:flutter/material.dart';
 
 class DrawingScreen extends StatefulWidget {
@@ -30,21 +31,29 @@ class _DrawingScreenState extends State<DrawingScreen> {
     // TODO
   }
 
-  void onPanStart(DragStartDetails details) {
-    // TODO
+  void _onPanStart(DragStartDetails details) {
+    print("User started drawing");
+    final box = context.findRenderObject() as RenderBox;
+    final point = box.globalToLocal(details.globalPosition);
+    setState(() {
+      line ??= DrawnLine([point], selectedColor, selectedWidth);
+    });
   }
 
-  void onPanUpdate(DragUpdateDetails details) {
-    // TODO
+  void _onPanUpdate(DragUpdateDetails details) {
+    final box = context.findRenderObject() as RenderBox;
+    final point = box.globalToLocal(details.globalPosition);
+    final path = List<Offset?>.from(line!.path)..add(point);
+    setState(() {
+      line = DrawnLine(path, selectedColor, selectedWidth);
+    });
   }
 
-  void onPanEnd(DragEndDetails details) {
-    // TODO
-  }
-
-  Widget buildCurrentPath(BuildContext context) {
-    // TODO
-    return Container();
+  void _onPanEnd(DragEndDetails details) {
+    final path = List<Offset?>.from(line!.path)..add(null);
+    setState(() {
+      line = DrawnLine(path, selectedColor, selectedWidth);
+    });
   }
 
   Widget buildAllPaths(BuildContext context) {
@@ -125,13 +134,39 @@ class _DrawingScreenState extends State<DrawingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.yellow[50],
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: Theme.of(context).iconTheme,
       ),
       body: Stack(
-        children: [],
+        children: [
+          _buildCurrentPath(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrentPath() {
+    return GestureDetector(
+      onPanStart: _onPanStart,
+      onPanUpdate: _onPanUpdate,
+      onPanEnd: _onPanEnd,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(4),
+        color: Colors.transparent,
+        alignment: Alignment.topLeft,
+        child: StreamBuilder<DrawnLine>(
+          stream: currentLineStreamController.stream,
+          builder: (context, snapshot) {
+            return CustomPaint(
+              painter: HandDrawingPainter(lines: [line]),
+            );
+          },
+        ),
       ),
     );
   }

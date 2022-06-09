@@ -1,5 +1,5 @@
 import 'package:daily_ui/2022/6/3_drag/drag_animation_screen.dart';
-import 'package:daily_ui/2022/6/4_spray/drawing_screen.dart';
+import 'package:daily_ui/2022/6/4_drawing/drawing_screen.dart';
 import 'package:flutter/material.dart';
 
 class JuneScreen extends StatelessWidget {
