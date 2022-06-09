@@ -1,8 +1,11 @@
+import 'dart:ui' as ui;
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:daily_ui/2022/6/4_drawing/drawn_line.dart';
 import 'package:daily_ui/2022/6/4_drawing/hand_drawing_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class DrawingScreen extends StatefulWidget {
   const DrawingScreen({Key? key}) : super(key: key);
@@ -12,61 +15,174 @@ class DrawingScreen extends StatefulWidget {
 }
 
 class _DrawingScreenState extends State<DrawingScreen> {
-  GlobalKey _globalKey = GlobalKey();
-  List<DrawnLine> lines = <DrawnLine>[];
+  final GlobalKey _globalKey = GlobalKey();
+  List<DrawnLine?> lines = <DrawnLine?>[];
   DrawnLine? line;
   Color selectedColor = Colors.black;
   double selectedWidth = 5.0;
 
-  StreamController<List<DrawnLine>> linesStreamController =
-      StreamController<List<DrawnLine>>.broadcast();
-  StreamController<DrawnLine> currentLineStreamController =
-      StreamController<DrawnLine>.broadcast();
+  StreamController<List<DrawnLine?>> linesStreamController =
+      StreamController<List<DrawnLine?>>.broadcast();
+  StreamController<DrawnLine?> currentLineStreamController =
+      StreamController<DrawnLine?>.broadcast();
+
+  @override
+  void dispose() {
+    linesStreamController.close();
+    currentLineStreamController.close();
+    super.dispose();
+  }
 
   Future<void> save() async {
-    // TODO
+    try {
+      final boundary = _globalKey.currentContext!.findRenderObject()
+          as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage();
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final pngBytes = byteData!.buffer.asUint8List();
+      print("saved");
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> clear() async {
-    // TODO
+    log("clear");
+    lines = [];
+    line = null;
+    linesStreamController.add([]);
+    currentLineStreamController.add(null);
   }
 
   void _onPanStart(DragStartDetails details) {
-    print("User started drawing");
     final box = context.findRenderObject() as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
-    setState(() {
-      line ??= DrawnLine([point], selectedColor, selectedWidth);
-    });
+    line = DrawnLine([point], selectedColor, selectedWidth);
+    currentLineStreamController.add(line);
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
     final box = context.findRenderObject() as RenderBox;
     final point = box.globalToLocal(details.globalPosition);
     final path = List<Offset?>.from(line!.path)..add(point);
-    setState(() {
-      line = DrawnLine(path, selectedColor, selectedWidth);
-    });
+    line = DrawnLine(path, selectedColor, selectedWidth);
+
+    currentLineStreamController.add(line);
   }
 
   void _onPanEnd(DragEndDetails details) {
-    final path = List<Offset?>.from(line!.path)..add(null);
-    setState(() {
-      line = DrawnLine(path, selectedColor, selectedWidth);
-    });
+    lines = List.from(lines)..add(line);
+
+    linesStreamController.add(lines);
   }
 
-  Widget buildAllPaths(BuildContext context) {
-    // TODO
-    return Container();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.yellow[50],
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: Theme.of(context).iconTheme,
+      ),
+      body: Stack(
+        children: [
+          _buildAllPaths(),
+          _buildCurrentPath(),
+          _buildColorToolbar(),
+          _buildStrokeToolbar(),
+        ],
+      ),
+    );
   }
 
-  Widget buildStrokeToolbar() {
-    // TODO
-    return Container();
+  Widget _buildAllPaths() {
+    return RepaintBoundary(
+      key: _globalKey,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: StreamBuilder<List<DrawnLine?>>(
+          stream: linesStreamController.stream,
+          builder: (context, snapshot) {
+            return CustomPaint(
+              painter: HandDrawingPainter(
+                lines: lines,
+              ),
+              size: Size.infinite,
+            );
+          },
+        ),
+      ),
+    );
   }
 
-  Widget buildStrokeButton(double strokeWidth) {
+  Widget _buildCurrentPath() {
+    return GestureDetector(
+      onPanStart: _onPanStart,
+      onPanUpdate: _onPanUpdate,
+      onPanEnd: _onPanEnd,
+      child: RepaintBoundary(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: StreamBuilder<DrawnLine?>(
+            stream: currentLineStreamController.stream,
+            builder: (context, snapshot) {
+              return CustomPaint(
+                painter: HandDrawingPainter(
+                  lines: [line],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorToolbar() {
+    return Positioned(
+      top: 40,
+      right: 10,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          buildClearButton(),
+          const Divider(height: 10),
+          buildSaveButton(),
+          const Divider(height: 20),
+          _buildColorButton(Colors.red),
+          _buildColorButton(Colors.blueAccent),
+          _buildColorButton(Colors.deepOrange),
+          _buildColorButton(Colors.green),
+          _buildColorButton(Colors.lightBlue),
+          _buildColorButton(Colors.black),
+          _buildColorButton(Colors.white),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStrokeToolbar() {
+    return Positioned(
+      bottom: 20,
+      right: 10,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildStrokeButton(5.0),
+          _buildStrokeButton(10.0),
+          _buildStrokeButton(15.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStrokeButton(double strokeWidth) {
     return GestureDetector(
       onTap: () {
         selectedWidth = strokeWidth;
@@ -83,15 +199,11 @@ class _DrawingScreenState extends State<DrawingScreen> {
     );
   }
 
-  Widget buildColorToolbar() {
-    // TODO
-    return Container();
-  }
-
-  Widget buildColorButton(Color color) {
+  Widget _buildColorButton(Color color) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: FloatingActionButton(
+        heroTag: color.value.toString(),
         mini: true,
         backgroundColor: color,
         child: Container(),
@@ -107,7 +219,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
   Widget buildSaveButton() {
     return GestureDetector(
       onTap: save,
-      child: CircleAvatar(
+      child: const CircleAvatar(
         child: Icon(
           Icons.save,
           size: 20.0,
@@ -120,7 +232,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
   Widget buildClearButton() {
     return GestureDetector(
       onTap: clear,
-      child: CircleAvatar(
+      child: const CircleAvatar(
         child: Icon(
           Icons.create,
           size: 20.0,
@@ -128,53 +240,5 @@ class _DrawingScreenState extends State<DrawingScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.yellow[50],
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: Theme.of(context).iconTheme,
-      ),
-      body: Stack(
-        children: [
-          _buildCurrentPath(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCurrentPath() {
-    return GestureDetector(
-      onPanStart: _onPanStart,
-      onPanUpdate: _onPanUpdate,
-      onPanEnd: _onPanEnd,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        padding: const EdgeInsets.all(4),
-        color: Colors.transparent,
-        alignment: Alignment.topLeft,
-        child: StreamBuilder<DrawnLine>(
-          stream: currentLineStreamController.stream,
-          builder: (context, snapshot) {
-            return CustomPaint(
-              painter: HandDrawingPainter(lines: [line]),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    linesStreamController.close();
-    currentLineStreamController.close();
-    super.dispose();
   }
 }
