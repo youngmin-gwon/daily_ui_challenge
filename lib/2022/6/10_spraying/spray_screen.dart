@@ -43,6 +43,24 @@ class _SprayScreenState extends State<SprayScreen> {
     currentLineStreamController.add(line);
   }
 
+  void _clear() {
+    line = null;
+    lines.clear();
+
+    currentLineStreamController.add(line);
+    linesStremController.add(lines);
+  }
+
+  void _deleteLatest() {
+    line = null;
+    if (lines.isNotEmpty) {
+      lines.removeLast();
+    }
+
+    currentLineStreamController.add(line);
+    linesStremController.add(lines);
+  }
+
   void _onScaleUpdate(ScaleUpdateDetails details) {
     final points = List<Offset>.from(line!.path)..add(details.localFocalPoint);
 
@@ -75,6 +93,7 @@ class _SprayScreenState extends State<SprayScreen> {
           _buildAllPaths(),
           _buildCurrentPath(),
           _buildGestureDetector(),
+          _buildButtonToolBox(),
         ],
       ),
     );
@@ -109,6 +128,38 @@ class _SprayScreenState extends State<SprayScreen> {
       onScaleEnd: _onScaleEnd,
     );
   }
+
+  Widget _buildButtonToolBox() {
+    return Positioned(
+      top: 20,
+      right: 20,
+      child: Column(
+        children: [
+          _buildClearButton(),
+          const SizedBox(height: 12),
+          _buildDeleteButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClearButton() {
+    return GestureDetector(
+      onTap: _clear,
+      child: const CircleAvatar(
+        child: Icon(Icons.edit),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton() {
+    return GestureDetector(
+      onTap: _deleteLatest,
+      child: const CircleAvatar(
+        child: Icon(Icons.restore_page),
+      ),
+    );
+  }
 }
 
 class SprayPainter extends CustomPainter {
@@ -124,7 +175,17 @@ class SprayPainter extends CustomPainter {
       ..color = Colors.redAccent
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round
       ..strokeWidth = 5.0;
+
+    /// how to show shadow
+    Paint shadowPaint = Paint()
+      ..color = Colors.redAccent
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
+      ..strokeWidth = 10.0;
 
     for (final line in lines) {
       final path = Path();
@@ -138,6 +199,11 @@ class SprayPainter extends CustomPainter {
         ..color = line.color
         ..strokeWidth = line.width;
 
+      shadowPaint
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      canvas.drawPath(path, shadowPaint);
       canvas.drawPath(path, paint);
     }
   }
