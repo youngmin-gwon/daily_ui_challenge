@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -169,6 +171,16 @@ class SprayPainter extends CustomPainter {
     required this.lines,
   });
 
+  double distanceBetween(Offset point1, Offset point2) {
+    return math.sqrt(
+      math.pow(point2.dx - point1.dx, 2) + math.pow(point2.dy - point1.dy, 2),
+    );
+  }
+
+  double angleBetween(Offset point1, Offset point2) {
+    return math.atan2(point2.dx - point1.dx, point2.dy - point1.dy);
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
@@ -179,32 +191,89 @@ class SprayPainter extends CustomPainter {
       ..strokeWidth = 5.0;
 
     /// how to show shadow
-    Paint shadowPaint = Paint()
-      ..color = Colors.redAccent
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..strokeJoin = StrokeJoin.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
-      ..strokeWidth = 10.0;
+    // Paint shadowPaint = Paint()
+    //   ..color = Colors.redAccent
+    //   ..strokeCap = StrokeCap.round
+    //   ..style = PaintingStyle.stroke
+    //   ..strokeJoin = StrokeJoin.round
+    //   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
+    //   ..strokeWidth = 10.0;
+
+    ui.Gradient shader;
 
     for (final line in lines) {
-      final path = Path();
-      path.moveTo(line.path[0].dx, line.path[0].dy);
+      // final path = Path();
+      // path.moveTo(line.path[0].dx, line.path[0].dy);
+
+      var lastPoint = line.path[0];
 
       for (var i = 0; i < line.path.length - 1; i++) {
-        path.lineTo(line.path[i].dx, line.path[i].dy);
+        // path.lineTo(line.path[i].dx, line.path[i].dy);
+
+        var currentPoint = line.path[i];
+        var dist = distanceBetween(lastPoint, currentPoint);
+        var angle = angleBetween(lastPoint, currentPoint);
+
+        for (var i = 0; i < dist; i += 5) {
+          var x = lastPoint.dx + (math.sin(angle) * i);
+          var y = lastPoint.dy + (math.cos(angle) * i);
+
+          shader = ui.Gradient.radial(
+            Offset(x, y),
+            20.0,
+            [
+              Colors.black,
+              Colors.black.withOpacity(.5),
+              Colors.transparent,
+            ],
+            [
+              0,
+              0.5,
+              1,
+            ],
+          );
+
+          paint
+            ..color = line.color
+            ..strokeWidth = line.width
+            ..style = ui.PaintingStyle.fill
+            ..shader = shader;
+
+          canvas.drawCircle(Offset(x, y), 20, paint);
+        }
+
+        lastPoint = currentPoint;
+
+        // shader = ui.Gradient.radial(
+        //   line.path[i],
+        //   20.0,
+        //   [
+        //     Colors.black,
+        //     Colors.black.withOpacity(.5),
+        //     Colors.transparent,
+        //   ],
+        //   [
+        //     0,
+        //     0.5,
+        //     1,
+        //   ],
+        // );
+
+        // paint
+        //   ..color = line.color
+        //   ..strokeWidth = line.width
+        //   ..style = ui.PaintingStyle.fill
+        //   ..shader = shader;
+
+        // // canvas.drawPath(path, paint);
+        // canvas.drawCircle(line.path[i], 20, paint);
       }
 
-      paint
-        ..color = line.color
-        ..strokeWidth = line.width;
-
-      shadowPaint
-        ..color = line.color
-        ..strokeWidth = line.width;
-
-      canvas.drawPath(path, shadowPaint);
-      canvas.drawPath(path, paint);
+      /// how to draw shadow
+      // shadowPaint
+      //   ..color = line.color
+      //   ..strokeWidth = line.width;
+      // canvas.drawPath(path, shadowPaint);
     }
   }
 
