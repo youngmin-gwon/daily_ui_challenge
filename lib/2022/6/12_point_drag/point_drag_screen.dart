@@ -14,6 +14,8 @@ class _PointDragScreenState extends State<PointDragScreen> {
   final List<Offset> points = [];
   late math.Random _random;
 
+  var indexOfPoint = -1;
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +29,7 @@ class _PointDragScreenState extends State<PointDragScreen> {
       var list = List.generate(
         10,
         (index) => Offset(
-          padding + index * width / 7,
+          padding + index * width / 10,
           lerpDouble(
             size.height / 2 - 100,
             size.height / 2 + 100,
@@ -48,9 +50,44 @@ class _PointDragScreenState extends State<PointDragScreen> {
         backgroundColor: Colors.transparent,
         iconTheme: Theme.of(context).iconTheme,
       ),
-      body: CustomPaint(
-        painter: DragPainter(points: points),
-        size: Size.infinite,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomPaint(
+            painter: DragPainter(points: points),
+            size: Size.infinite,
+          ),
+          GestureDetector(
+            onLongPressStart: (details) {
+              indexOfPoint = points.indexWhere((element) =>
+                  (element.dx - details.localPosition.dx).abs() < 10 &&
+                  (element.dy - details.localPosition.dy).abs() < 10);
+              if (indexOfPoint > 0) {
+                points.removeAt(indexOfPoint);
+              }
+              setState(() {});
+            },
+            onScaleStart: (details) {
+              indexOfPoint = points.indexWhere(
+                (element) {
+                  return (element.dx - details.localFocalPoint.dx).abs() < 10 &&
+                      (element.dy - details.localFocalPoint.dy).abs() < 10;
+                },
+              );
+
+              if (indexOfPoint > 0) {
+                points.add(details.localFocalPoint);
+                points.sort((e1, e2) => e1.dx.compareTo(e2.dx));
+                setState(() {});
+              }
+            },
+            onScaleUpdate: (details) {
+              if (indexOfPoint < 0) return;
+              points[indexOfPoint] = details.localFocalPoint;
+              setState(() {});
+            },
+          ),
+        ],
       ),
     );
   }
@@ -77,9 +114,15 @@ class DragPainter extends CustomPainter {
     final pointPaint = Paint()
       ..color = Colors.blue
       ..style = PaintingStyle.fill
-      ..strokeWidth = 5;
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 15;
 
     final path = Path();
+
+    points.insert(0, points[0]);
+    points.add(points.last);
+    points.add(points.last);
+
     path.moveTo(points[0].dx, points[0].dy);
 
     for (var i = 1; i < points.length - 3; i++) {
