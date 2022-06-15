@@ -171,6 +171,13 @@ class SprayPainter extends CustomPainter {
     required this.lines,
   });
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    // _edgeSmoothing(canvas, size);
+    // _pointsWithShadow(canvas, size);
+    _bezier(canvas, size);
+  }
+
   double distanceBetween(Offset point1, Offset point2) {
     return math.sqrt(
       math.pow(point2.dx - point1.dx, 2) + math.pow(point2.dy - point1.dy, 2),
@@ -181,8 +188,14 @@ class SprayPainter extends CustomPainter {
     return math.atan2(point2.dx - point1.dx, point2.dy - point1.dy);
   }
 
-  @override
-  void paint(Canvas canvas, Size size) {
+  ui.Offset midPointBetween(Offset p1, Offset p2) {
+    return ui.Offset(
+      p1.dx + (p2.dx - p1.dx) / 2,
+      p1.dy + (p2.dy - p1.dy) / 2,
+    );
+  }
+
+  void _pointsWithShadow(Canvas canvas, Size size) {
     Paint paint = Paint()
       ..color = Colors.redAccent
       ..strokeCap = StrokeCap.round
@@ -191,25 +204,52 @@ class SprayPainter extends CustomPainter {
       ..strokeWidth = 5.0;
 
     /// how to show shadow
-    // Paint shadowPaint = Paint()
-    //   ..color = Colors.redAccent
-    //   ..strokeCap = StrokeCap.round
-    //   ..style = PaintingStyle.stroke
-    //   ..strokeJoin = StrokeJoin.round
-    //   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
-    //   ..strokeWidth = 10.0;
+    Paint shadowPaint = Paint()
+      ..color = Colors.redAccent
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5)
+      ..strokeWidth = 10.0;
+
+    for (final line in lines) {
+      final path = Path();
+      path.moveTo(line.path[0].dx, line.path[0].dy);
+
+      for (var i = 0; i < line.path.length; i++) {
+        path.lineTo(line.path[i].dx, line.path[i].dy);
+      }
+
+      paint
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      shadowPaint
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      canvas.drawPath(path, shadowPaint);
+      canvas.drawPath(path, paint);
+    }
+
+    /// how to draw shadow
+  }
+
+  /// for 문을 다시 한번 돌기 때문에 performance가 좋지 않음
+  void _edgeSmoothing(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = Colors.redAccent
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round
+      ..strokeWidth = 5.0;
 
     ui.Gradient shader;
 
     for (final line in lines) {
-      // final path = Path();
-      // path.moveTo(line.path[0].dx, line.path[0].dy);
-
       var lastPoint = line.path[0];
 
-      for (var i = 0; i < line.path.length - 1; i++) {
-        // path.lineTo(line.path[i].dx, line.path[i].dy);
-
+      for (var i = 0; i < line.path.length; i++) {
         var currentPoint = line.path[i];
         var dist = distanceBetween(lastPoint, currentPoint);
         var angle = angleBetween(lastPoint, currentPoint);
@@ -243,37 +283,63 @@ class SprayPainter extends CustomPainter {
         }
 
         lastPoint = currentPoint;
+      }
+    }
+  }
 
-        // shader = ui.Gradient.radial(
-        //   line.path[i],
-        //   20.0,
-        //   [
-        //     Colors.black,
-        //     Colors.black.withOpacity(.5),
-        //     Colors.transparent,
-        //   ],
-        //   [
-        //     0,
-        //     0.5,
-        //     1,
-        //   ],
-        // );
+  void _bezier(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..style = ui.PaintingStyle.stroke
+      ..color = Colors.red
+      ..strokeCap = ui.StrokeCap.round
+      ..strokeJoin = ui.StrokeJoin.round
+      ..strokeWidth = 10.0;
 
-        // paint
-        //   ..color = line.color
-        //   ..strokeWidth = line.width
-        //   ..style = ui.PaintingStyle.fill
-        //   ..shader = shader;
+    Paint shadowPaint = Paint()
+      ..color = Colors.redAccent
+      ..strokeCap = ui.StrokeCap.round
+      ..style = ui.PaintingStyle.stroke
+      ..strokeJoin = ui.StrokeJoin.round
+      ..maskFilter = const ui.MaskFilter.blur(BlurStyle.normal, 5)
+      ..strokeWidth = 10.0;
 
-        // // canvas.drawPath(path, paint);
-        // canvas.drawCircle(line.path[i], 20, paint);
+    for (final line in lines) {
+      if (line.path.length <= 1) {
+        return;
+      }
+      var p1 = line.path[0];
+      var p2 = line.path[1];
+
+      final path = Path();
+      path.moveTo(line.path[0].dx, line.path[0].dy);
+
+      for (var i = 0; i < line.path.length - 1; i++) {
+        // pick the point between pi+1 & pi+2 as the
+        // end point and p1 as our control point
+
+        var midPoint = midPointBetween(p1, p2);
+
+        path.quadraticBezierTo(p1.dx, p1.dy, midPoint.dx, midPoint.dy);
+
+        p1 = line.path[i];
+        p2 = line.path[i + 1];
       }
 
-      /// how to draw shadow
-      // shadowPaint
-      //   ..color = line.color
-      //   ..strokeWidth = line.width;
-      // canvas.drawPath(path, shadowPaint);
+      // draw the last line as a straight line while
+      // we wait for the next point to be able to calculate
+      // the bezier control point
+      path.lineTo(p1.dx, p1.dy);
+
+      paint
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      shadowPaint
+        ..color = line.color
+        ..strokeWidth = line.width;
+
+      canvas.drawPath(path, shadowPaint);
+      canvas.drawPath(path, paint);
     }
   }
 
