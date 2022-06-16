@@ -1,3 +1,8 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "terminal.integrated.fontSize": 22,
+    "editor.fontSize": 22,
+    "debug.console.fontSize": 22,
+    "markdown.preview.fontSize": 22,
+    "scm.inputFontSize": 22
 }
