@@ -21,9 +21,7 @@ class ToPixelsConversionResult {
 class ToPixelsConverter {
   final String string;
   final double canvasSize;
-  bool border;
-
-  ui.Canvas? canvas;
+  final bool border;
 
   ToPixelsConverter.fromString({
     required this.string,
@@ -73,6 +71,7 @@ class ToPixelsConverter {
   }
 
   int _convertColorSpace(int argbColor) {
+    // ARGB
     int r = (argbColor >> 16) & 0xFF;
     int b = argbColor & 0xFF;
     return (argbColor & 0xFF00FF00) | (b << 16) | r;

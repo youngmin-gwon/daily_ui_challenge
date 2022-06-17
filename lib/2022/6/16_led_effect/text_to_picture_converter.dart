@@ -9,10 +9,12 @@ class TextToPictureConverter {
     required bool border,
   }) {
     final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder,
-        Rect.fromPoints(Offset(0.0, 0.0), Offset(canvasSize, canvasSize)));
+    final canvas = Canvas(
+      recorder,
+      Rect.fromPoints(const Offset(0.0, 0.0), Offset(canvasSize, canvasSize)),
+    );
 
-    final Color color = Colors.white;
+    const Color color = Colors.white;
 
     if (border) {
       final stroke = Paint()
@@ -22,14 +24,17 @@ class TextToPictureConverter {
       canvas.drawRect(Rect.fromLTWH(0.0, 0.0, canvasSize, canvasSize), stroke);
     }
 
-    TextSpan span = new TextSpan(
-        style:
-            new TextStyle(fontFamily: "Monospace", color: color, fontSize: 24),
-        text: text);
-    TextPainter tp = TextPainter(
-        text: span,
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center);
+    final span = TextSpan(
+      style:
+          const TextStyle(fontFamily: "Monospace", color: color, fontSize: 24),
+      text: text,
+    );
+
+    final tp = TextPainter(
+      text: span,
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
 
     tp.layout(
       minWidth: 0,
