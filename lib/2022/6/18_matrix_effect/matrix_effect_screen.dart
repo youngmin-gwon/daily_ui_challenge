@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class MatrixEffectScreen extends StatefulWidget {
@@ -8,6 +11,34 @@ class MatrixEffectScreen extends StatefulWidget {
 }
 
 class _MatrixEffectScreenState extends State<MatrixEffectScreen> {
+  List<Widget> _verticalLines = [];
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    timer = Timer.periodic(
+      const Duration(milliseconds: 300),
+      (timer) {
+        setState(() {
+          _verticalLines.add(
+            _getVerticalTextLine(),
+          );
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -17,7 +48,28 @@ class _MatrixEffectScreenState extends State<MatrixEffectScreen> {
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
-        body: VerticalTextLine(),
+        body: Stack(
+          children: _verticalLines,
+        ),
+      ),
+    );
+  }
+
+  Widget _getVerticalTextLine() {
+    Key key = GlobalKey();
+    return Positioned(
+      key: key,
+      left: math.Random().nextDouble() * MediaQuery.of(context).size.width,
+      child: VerticalTextLine(
+        speed: 1 + math.Random().nextDouble() * 9,
+        maxLength: math.Random().nextInt(10) + 5,
+        onFinished: () {
+          setState(() {
+            _verticalLines.removeWhere(
+              (element) => element.key == key,
+            );
+          });
+        },
       ),
     );
   }
@@ -28,17 +80,58 @@ class VerticalTextLine extends StatefulWidget {
     Key? key,
     this.speed = 12.0,
     this.maxLength = 10,
+    required this.onFinished,
   }) : super(key: key);
 
   final double speed;
   final int maxLength;
+  final VoidCallback onFinished;
 
   @override
   State<VerticalTextLine> createState() => _VerticalTextLineState();
 }
 
 class _VerticalTextLineState extends State<VerticalTextLine> {
-  List<String> _characters = ["T", "E", "S", "T"];
+  List<String> _characters = [];
+
+  late Timer timer;
+  late Duration _stepInterval;
+
+  @override
+  void initState() {
+    super.initState();
+    _stepInterval = Duration(milliseconds: (1000 ~/ widget.speed));
+    _startTimer();
+  }
+
+  void _startTimer() {
+    timer = Timer.periodic(
+      _stepInterval,
+      (timer) {
+        final _random = math.Random();
+        String element = String.fromCharCode(
+          _random.nextInt(512),
+        );
+
+        final box = context.findRenderObject() as RenderBox;
+
+        if (box.size.height > MediaQuery.of(context).size.height * 2) {
+          widget.onFinished();
+          return;
+        }
+
+        setState(() {
+          _characters.add(element);
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
