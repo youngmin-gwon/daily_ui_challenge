@@ -2,6 +2,7 @@ import 'package:daily_ui/2022/6/10_spraying/spray_screen.dart';
 import 'package:daily_ui/2022/6/12_point_drag/point_drag_screen.dart';
 import 'package:daily_ui/2022/6/16_led_effect/pixel_effect_screen.dart';
 import 'package:daily_ui/2022/6/18_matrix_effect/matrix_effect_screen.dart';
+import 'package:daily_ui/2022/6/20_magnifier/magnifier_screen.dart';
 import 'package:daily_ui/2022/6/3_drag/drag_animation_screen.dart';
 import 'package:daily_ui/2022/6/4_drawing/drawing_screen.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,16 @@ class JuneScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("18. Matrix Effect"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const MagnifierScreen()),
+                  );
+                },
+                child: const Text("19. Magnifier Effect"),
               ),
             ],
           ),

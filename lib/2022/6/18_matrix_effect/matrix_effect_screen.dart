@@ -11,7 +11,7 @@ class MatrixEffectScreen extends StatefulWidget {
 }
 
 class _MatrixEffectScreenState extends State<MatrixEffectScreen> {
-  List<Widget> _verticalLines = [];
+  final List<Widget> _verticalLines = [];
   late Timer timer;
 
   @override
@@ -92,7 +92,7 @@ class VerticalTextLine extends StatefulWidget {
 }
 
 class _VerticalTextLineState extends State<VerticalTextLine> {
-  List<String> _characters = [];
+  final List<String> _characters = [];
 
   late Timer timer;
   late Duration _stepInterval;
@@ -104,10 +104,16 @@ class _VerticalTextLineState extends State<VerticalTextLine> {
     _startTimer();
   }
 
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
   void _startTimer() {
     timer = Timer.periodic(
       _stepInterval,
-      (timer) {
+      (_) {
         final _random = math.Random();
         String element = String.fromCharCode(
           _random.nextInt(512),
@@ -125,12 +131,6 @@ class _VerticalTextLineState extends State<VerticalTextLine> {
         });
       },
     );
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
   }
 
   @override
@@ -170,6 +170,7 @@ class _VerticalTextLineState extends State<VerticalTextLine> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: _getCharacters(),
       ),
     );
