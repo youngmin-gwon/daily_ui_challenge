@@ -95,8 +95,7 @@ class BackgroundShaderPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..shader = image == null
           ? null
-          : ImageShader(
-              image!, TileMode.repeated, TileMode.repeated, deviceTransform)
+          : ImageShader(image!, TileMode.clamp, TileMode.clamp, deviceTransform)
       ..style = ui.PaintingStyle.stroke
       ..strokeWidth = 40.2;
 
