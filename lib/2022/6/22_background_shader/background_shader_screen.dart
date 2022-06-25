@@ -110,7 +110,6 @@ class BackgroundShaderPainter extends CustomPainter {
     for (final offset in offsets) {
       path.lineTo(offset.dx, offset.dy);
     }
-
     canvas.drawPath(path, paint);
   }
 
