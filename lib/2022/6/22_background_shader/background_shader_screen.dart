@@ -1,7 +1,8 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class BackgroundShaderScreen extends StatefulWidget {
   const BackgroundShaderScreen({Key? key}) : super(key: key);
@@ -10,63 +11,79 @@ class BackgroundShaderScreen extends StatefulWidget {
   State<BackgroundShaderScreen> createState() => _BackgroundShaderScreenState();
 }
 
-class _BackgroundShaderScreenState extends State<BackgroundShaderScreen> {
-  ui.Image? _image;
+class _BackgroundShaderScreenState extends State<BackgroundShaderScreen>
+    with SingleTickerProviderStateMixin {
+  late Ticker _ticker;
+  late math.Random _random;
 
-  final _offsets = <Offset>[];
+  final _points = <MetaballPoint>[];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _loadImage();
-      });
-    });
+
+    _ticker = createTicker(_onTick)..start();
+    _random = math.Random();
   }
 
-  Future<void> _loadImage() async {
-    final size = MediaQuery.of(context).size;
-    _image = await ToImageConverter(canvasSize: size.width).convert();
-    print(_image);
+  @override
+  void dispose() {
+    _ticker.dispose();
+    super.dispose();
+  }
+
+  void _onTick(Duration elapsed) {
+    if (_points.isNotEmpty) {
+      setState(() {
+        for (var i = 0; i < _points.length; i++) {
+          _points[i].shrink();
+          if (_points[i].radius <= 0) {
+            _points.removeAt(i);
+          }
+        }
+      });
+    }
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    setState(() {
+      _points.add(
+        MetaballPoint(
+          center: details.localFocalPoint,
+          radius: ui.lerpDouble(50, 150, _random.nextDouble())!,
+          velocity: Offset(
+            ui.lerpDouble(-2, 2, _random.nextDouble())!,
+            ui.lerpDouble(-2, 2, _random.nextDouble())!,
+          ),
+          declineSpeed: ui.lerpDouble(2.2, 2.5, _random.nextDouble())!,
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconTheme.of(context),
-      ),
-      body: Stack(
-        children: [
-          CustomPaint(
-            size: Size.infinite,
-            painter: BackgroundShaderPainter(
-              image: _image,
-              offsets: _offsets,
+    return Theme(
+      data: ThemeData.dark(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Stack(
+          children: [
+            CustomPaint(
+              size: Size.infinite,
+              painter: BackgroundShaderPainter(
+                points: _points,
+              ),
             ),
-          ),
-          GestureDetector(
-            onScaleStart: (details) {
-              setState(() {
-                _offsets.clear();
-                _offsets.add(details.localFocalPoint);
-              });
-            },
-            onScaleUpdate: (details) {
-              setState(() {
-                _offsets.add(details.localFocalPoint);
-              });
-            },
-            onScaleEnd: (details) {
-              setState(() {
-                _offsets.clear();
-              });
-            },
-          ),
-        ],
+            GestureDetector(
+              onScaleUpdate: _onScaleUpdate,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -75,42 +92,58 @@ class _BackgroundShaderScreenState extends State<BackgroundShaderScreen> {
 class BackgroundShaderPainter extends CustomPainter {
   static final double devicePixelRatio = ui.window.devicePixelRatio;
 
-  final ui.Image? image;
-  final List<Offset> offsets;
+  final List<MetaballPoint> points;
 
-  BackgroundShaderPainter({
-    required this.image,
-    required this.offsets,
+  const BackgroundShaderPainter({
+    required this.points,
   });
+
+  static const backgroundPattern = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Colors.yellow,
+      Colors.amber,
+      Colors.orange,
+      Colors.red,
+    ],
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Float64List deviceTransform = Float64List(16)
-      ..[0] = devicePixelRatio
-      ..[5] = devicePixelRatio
-      ..[10] = 1.0
-      ..[15] = 2.0;
-    Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..shader = image == null
-          ? null
-          : ImageShader(image!, TileMode.clamp, TileMode.clamp, deviceTransform)
-      ..style = ui.PaintingStyle.stroke
-      ..strokeWidth = 40.2;
+    final shader = backgroundPattern.createShader(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+    );
 
-    final path = Path();
+    final innerPaint = Paint()..blendMode = ui.BlendMode.dstOut
+        // ..colorFilter = ui.ColorFilter.mode(Colors.black, ui.BlendMode.plus)
+        // ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 10)
+        // ..imageFilter = ui.ImageFilter.blur(sigmaX: 13, sigmaY: 13)
+        // ..colorFilter = ui.ColorFilter.matrix(
+        //   [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 20, -1200],
+        // );
+        ;
 
-    if (offsets.isEmpty) {
-      return;
+    if (points.isNotEmpty) {
+      for (var point in points) {
+        canvas.drawCircle(
+          point.center,
+          point.radius,
+          innerPaint,
+          // Paint()
+          //   ..color = Colors.white
+          //   ..style = ui.PaintingStyle.stroke
+          //   ..strokeWidth = 2
+        );
+      }
+
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Paint()
+          ..shader = shader
+          ..blendMode = ui.BlendMode.dstOver,
+      );
     }
-
-    path.moveTo(offsets[0].dx, offsets[0].dy);
-
-    for (final offset in offsets) {
-      path.lineTo(offset.dx, offset.dy);
-    }
-    canvas.drawPath(path, paint);
   }
 
   @override
@@ -119,63 +152,21 @@ class BackgroundShaderPainter extends CustomPainter {
   }
 }
 
-class ToImageConverter {
-  const ToImageConverter({
-    required this.canvasSize,
+class MetaballPoint {
+  MetaballPoint({
+    required this.center,
+    required this.radius,
+    required this.velocity,
+    required this.declineSpeed,
   });
 
-  final double canvasSize;
+  Offset center;
+  double radius;
+  final Offset velocity;
+  final double declineSpeed;
 
-  Future<ui.Image> convert() async {
-    final picture = GradientToPictureConverter.convert(
-      canvasSize: canvasSize,
-    );
-
-    final image = await picture.toImage(
-      canvasSize.toInt(),
-      canvasSize.toInt(),
-    );
-
-    return image;
-  }
-}
-
-class GradientToPictureConverter {
-  static ui.Picture convert({
-    required double canvasSize,
-  }) {
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(
-      recorder,
-      Rect.fromPoints(const Offset(0.0, 0.0), Offset(canvasSize, canvasSize)),
-    );
-
-    final Paint paint = Paint()
-      // ..shader = ui.Gradient.linear(
-      //   const ui.Offset(0, 0),
-      //   ui.Offset(0, canvasSize),
-      //   [
-      //     Colors.yellow,
-      //     Colors.amber,
-      //     Colors.orange,
-      //     Colors.red,
-      //   ],
-      // );
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Colors.yellow,
-          Colors.amber,
-          Colors.orange,
-          Colors.red,
-        ],
-      ).createShader(
-        Rect.fromLTWH(0, 0, canvasSize, canvasSize),
-      );
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, canvasSize, canvasSize), paint);
-
-    return recorder.endRecording();
+  void shrink() {
+    center += velocity;
+    radius -= declineSpeed;
   }
 }
