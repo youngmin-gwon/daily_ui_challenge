@@ -46,6 +46,7 @@ flutter:
     - assets/images/
     - assets/svg/
     - assets/fonts/
+    - assets/images/people/
 
   fonts:
     - family: Silkscreen

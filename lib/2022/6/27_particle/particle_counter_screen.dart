@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -30,7 +31,7 @@ class _ParticleCounterScreenState extends State<ParticleCounterScreen> {
 
   String getAssetName(int i) {
     final n = i < 10 ? '0$i' : '$i';
-    return "assets/images/people/$n.jpg";
+    return "assets/images/people/people$n.jpg";
   }
 
   @override
@@ -102,7 +103,23 @@ class _ParticleImageSwitcherState extends State<ParticleImageSwitcher>
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(vsync: this, duration: const Duration());
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
+
+    for (var i = 0; i < widget.imagePaths.length; i++) {
+      allPixels.add(loadPixels(widget.imagePaths[i]));
+    }
+    showParticles(0);
+  }
+
+  @override
+  void didUpdateWidget(covariant ParticleImageSwitcher oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.imageIndex != widget.imageIndex) {
+      showParticles(widget.imageIndex);
+    }
   }
 
   @override
@@ -114,9 +131,143 @@ class _ParticleImageSwitcherState extends State<ParticleImageSwitcher>
     super.dispose();
   }
 
+  Future<Pixels> loadPixels(String imagePath) async {
+    final provider = ExactAssetImage(imagePath);
+    final imageStream = provider.resolve(ImageConfiguration.empty);
+    final completer = Completer<ui.Image>();
+    late ImageStreamListener imageStreamListener;
+    imageStreamListener = ImageStreamListener((frame, _) {
+      completer.complete(frame.image);
+      imageStream.removeListener(imageStreamListener);
+    });
+    imageStream.addListener(imageStreamListener);
+    final image = await completer.future;
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    onDispose.add(() => image.dispose());
+    return Pixels(
+      byteData: byteData!,
+      width: image.width,
+      height: image.height,
+    );
+  }
+
+  Future<void> showParticles(int index) async {
+    final pixels = await allPixels[index];
+    final particleIndices = List<int>.generate(particles.length, (i) => i);
+    final width = widget.size.width;
+    final height = widget.size.height;
+    final halfWidth = width / 2;
+    final halfHeight = height / 2;
+    final halfImageWidth = pixels.width / 2;
+    final halfImageHeight = pixels.height / 2;
+    final tx = halfWidth - halfImageWidth;
+    final ty = halfHeight - halfImageHeight;
+
+    for (var y = 0; y < pixels.height; y++) {
+      for (var x = 0; x < pixels.width; x++) {
+        // Give it small odds that we'll assign a particle to this pixel.
+        if (randNextD(1) > loadPercentage * countMultiplier) {
+          continue;
+        }
+
+        final pixelColor = pixels.getColorAt(x, y);
+        Particle newParticle;
+        if (particleIndices.isNotEmpty) {
+          // Re-use existing particles.
+          final index = particleIndices.length == 1
+              ? particleIndices.removeAt(0)
+              : particleIndices.removeAt(randI(0, particleIndices.length - 1));
+          newParticle = particles[index];
+        } else {
+          // Create a new particle.
+          newParticle = Particle(halfWidth, halfHeight);
+          particles.add(newParticle);
+        }
+
+        newParticle.target.x = x + tx;
+        newParticle.target.y = y + ty;
+        newParticle.endColor = pixelColor;
+      }
+    }
+
+    // Kill off any left over particles that aren't assigned to anything.
+    if (particleIndices.isNotEmpty) {
+      for (var i = 0; i < particleIndices.length; i++) {
+        particles[particleIndices[i]].kill(width, height);
+      }
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return TouchDetector(
+      touchPointer: touchPointer,
+      child: CustomPaint(
+        painter: ParticulesPainter(
+          animation: controller,
+          particles: particles,
+          pointer: touchPointer,
+        ),
+      ),
+    );
+  }
+}
+
+class ParticulesPainter extends CustomPainter {
+  final Animation<double> animation;
+  final List<Particle> particles;
+  final TouchPointer pointer;
+
+  const ParticulesPainter({
+    required this.animation,
+    required this.particles,
+    required this.pointer,
+  }) : super(repaint: animation);
+
+  @override
+  void paint(ui.Canvas canvas, ui.Size size) {
+    final width = size.width;
+    final height = size.height;
+
+    for (var i = particles.length - 1; i >= 0; i--) {
+      final particle = particles[i];
+      particle.move(pointer.offset);
+
+      final color = particle.currentColor;
+      particle.currentColor = Color.lerp(
+          particle.currentColor, particle.endColor, particle.colorBlendRate)!;
+      double targetSize = 2;
+      if (!particle.isKilled) {
+        targetSize = map(
+          min(particle.distToTarget, closeEnoughTarget),
+          closeEnoughTarget,
+          0,
+          0,
+          particleSize,
+        );
+      }
+
+      particle.currentSize =
+          ui.lerpDouble(particle.currentSize, targetSize, 0.1)!;
+
+      final center = Offset(particle.pos.x, particle.pos.y);
+      canvas.drawCircle(center, particle.currentSize, Paint()..color = color);
+
+      if (particle.isKilled) {
+        if (particle.pos.x < 0 ||
+            particle.pos.x > width ||
+            particle.pos.y < 0 ||
+            particle.pos.y > height) {
+          particles.removeAt(i);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
 
@@ -132,9 +283,11 @@ class TouchDetector extends StatelessWidget {
   const TouchDetector({
     Key? key,
     required this.touchPointer,
+    required this.child,
   }) : super(key: key);
 
   final TouchPointer touchPointer;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +296,7 @@ class TouchDetector extends StatelessWidget {
       onScaleStart: (details) => touchPointer.offset = details.localFocalPoint,
       onScaleUpdate: (details) => touchPointer.offset = details.localFocalPoint,
       onScaleEnd: (details) => touchPointer.offset = null,
+      child: child,
     );
   }
 }

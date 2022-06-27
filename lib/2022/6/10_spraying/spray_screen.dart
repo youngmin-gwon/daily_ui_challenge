@@ -83,7 +83,7 @@ class _SprayScreenState extends State<SprayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -133,7 +133,7 @@ class _SprayScreenState extends State<SprayScreen> {
 
   Widget _buildButtonToolBox() {
     return Positioned(
-      top: 20,
+      top: 50,
       right: 20,
       child: Column(
         children: [
@@ -175,7 +175,8 @@ class SprayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // _edgeSmoothing(canvas, size);
     // _pointsWithShadow(canvas, size);
-    _bezier(canvas, size);
+    // _bezier(canvas, size);
+    _sprayWithRound(canvas, size);
   }
 
   double distanceBetween(Offset point1, Offset point2) {
@@ -193,6 +194,20 @@ class SprayPainter extends CustomPainter {
       p1.dx + (p2.dx - p1.dx) / 2,
       p1.dy + (p2.dy - p1.dy) / 2,
     );
+  }
+
+  void _sprayWithRound(Canvas canvas, Size size) {
+    for (final line in lines) {
+      for (var i = 0; i < line.path.length; i++) {
+        canvas.drawCircle(
+          line.path[i],
+          30,
+          Paint()
+            ..color = Colors.black
+            ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 20),
+        );
+      }
+    }
   }
 
   void _pointsWithShadow(Canvas canvas, Size size) {
