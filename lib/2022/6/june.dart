@@ -6,6 +6,7 @@ import 'package:daily_ui/2022/6/20_magnifier/magnifier_screen.dart';
 import 'package:daily_ui/2022/6/21_bezier/bezier_screen.dart';
 import 'package:daily_ui/2022/6/22_background_shader/background_shader_screen.dart';
 import 'package:daily_ui/2022/6/27_particle/particle_counter_screen.dart';
+import 'package:daily_ui/2022/6/28_lava/lava_screen.dart';
 import 'package:daily_ui/2022/6/3_drag/drag_animation_screen.dart';
 import 'package:daily_ui/2022/6/4_drawing/drawing_screen.dart';
 import 'package:flutter/material.dart';
@@ -122,6 +123,15 @@ class JuneScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("27. Particle Counter Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const LavaScreen()),
+                  );
+                },
+                child: const Text("28. Lava Animation"),
               ),
             ],
           ),
