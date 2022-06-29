@@ -5,19 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:daily_ui/2022/6/28_lava/ball.dart';
 
 class LavaPainter extends CustomPainter {
-  final Lava lava;
   final Color color;
-
-  const LavaPainter({
-    required this.lava,
-    required this.color,
-  });
+  final Lava lava;
+  const LavaPainter(
+    this.color,
+    this.lava,
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (lava.size == null || lava.size != size) {
-      lava.updateSize(size);
-    }
     lava.draw(canvas, size, color, debug: false);
   }
 
@@ -29,11 +25,11 @@ class LavaPainter extends CustomPainter {
 
 class Lava {
   num step = 5;
-  Size? size;
+  Size size;
 
-  double get width => size!.width;
+  double get width => size.width;
 
-  double get height => size!.height;
+  double get height => size.height;
 
   late Rect sRect;
 
@@ -45,42 +41,39 @@ class Lava {
   double iter = 0;
   int sign = 1;
 
-  late Map<int, Map<int, ForcePoint<double>>> matrix;
+  late Map<int, Map<int, ForcePoint>> matrix;
 
-  late List<Ball?> balls;
+  late List<Ball> balls;
   int ballsLength;
 
-  Lava(this.ballsLength);
+  Lava(this.ballsLength, this.size);
 
-  updateSize(Size size) {
+  void updateSize(Size size) {
     size = size;
     sRect = Rect.fromCenter(
         center: Offset.zero, width: sx.toDouble(), height: sy.toDouble());
 
     matrix = {};
-    print(sx);
-    print(sRect.left - step);
     for (int i = (sRect.left - step).toInt(); i < sRect.right + step; i++) {
       matrix[i] = {};
       for (int j = (sRect.top - step).toInt(); j < sRect.bottom + step; j++) {
-        matrix[i]?[j] = ForcePoint(
+        matrix[i]![j] = ForcePoint(
             (i + sx ~/ 2).toDouble() * step, (j + sy ~/ 2).toDouble() * step);
       }
     }
-    balls = List.filled(ballsLength, null);
-    for (var index = 0; ballsLength > index; index++) balls[index] = Ball(size);
+    balls = List.filled(ballsLength, Ball(size));
   }
 
   double computeForce(int sx, int sy) {
-    var force;
+    double force;
     if (!sRect.contains(Offset(sx.toDouble(), sy.toDouble()))) {
       force = .6 * sign;
     } else {
       force = 0;
       final point = matrix[sx]?[sy];
       for (final ball in balls) {
-        force += ball!.size *
-            ball.size /
+        force += ball.radius *
+            ball.radius /
             (-2 * point!.x * ball.pos.x -
                 2 * point.y * ball.pos.y +
                 ball.pos.magnitude +
@@ -99,13 +92,13 @@ class Lava {
   final ix = [1, 0, -1, 0, 0, 1, 0, -1, -1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1];
 
   List? marchingSquares(List? params, Path path) {
-    int sx = params?[0];
-    int sy = params?[1];
-    int pdir = params?[2];
+    int sx = params![0];
+    int sy = params[1];
+    int? pdir = params[2];
 
     if (matrix[sx]?[sy]?.computed == iter) return null;
 
-    var dir, mscase = 0;
+    int dir, mscase = 0;
     for (var a = 0; 4 > a; a++) {
       final dx = ix[a + 12];
       final dy = ix[a + 16];
@@ -113,8 +106,12 @@ class Lava {
       if (force == null ||
           force > 0 && sign < 0 ||
           force < 0 && sign > 0 ||
-          force == 0) force = computeForce(sx + dx, sy + dy);
-      if (force.abs() > 1) mscase += math.pow(2, a).toInt();
+          force == 0) {
+        force = computeForce(sx + dx, sy + dy);
+      }
+      if (force.abs() > 1) {
+        mscase += math.pow(2, a).toInt();
+      }
     }
 
     if (15 == mscase) {
@@ -125,7 +122,7 @@ class Lava {
       dir = 3 == pdir ? 0 : 2;
     } else {
       dir = mscases[mscase];
-      matrix[sx]?[sy]?.computed = iter;
+      matrix[sx]![sy]!.computed = iter;
     }
 
     final dx1 = plx[(4 * dir + 2).toInt()];
@@ -155,44 +152,40 @@ class Lava {
     return [sx + ix[dir + 4], sy + ix[dir + 8], dir];
   }
 
-  draw(Canvas canvas, Size size, Color color, {bool debug = false}) {
-    for (Ball? ball in balls) {
-      ball?.moveIn(size);
+  void draw(Canvas canvas, Size size, Color color, {bool debug = false}) {
+    for (Ball ball in balls) {
+      ball.moveIn(size);
     }
 
-    try {
-      iter++;
-      sign = -sign;
-      paint = false;
+    iter++;
+    sign = -sign;
+    paint = false;
 
-      for (Ball? ball in balls) {
-        Path path = Path();
-        List? params = [
-          (ball!.pos.x / step - sx / 2).round(),
-          (ball.pos.y / step - sy / 2).round(),
-          null
-        ];
-        do {
-          params = marchingSquares(params, path);
-        } while (params != null);
-        if (paint) {
-          path.close();
+    for (Ball ball in balls) {
+      Path path = Path();
+      List? params = [
+        (ball.pos.x / step - sx / 2).round(),
+        (ball.pos.y / step - sy / 2).round(),
+        null,
+      ];
+      do {
+        params = marchingSquares(params, path);
+      } while (params != null);
+      if (paint) {
+        path.close();
 
-          Paint paint = Paint()..color = color;
+        Paint paint = Paint()..color = color;
 
-          canvas.drawPath(path, paint);
+        canvas.drawPath(path, paint);
 
-          this.paint = false;
-        }
+        this.paint = false;
       }
-    } catch (e) {
-      print(e);
     }
 
     if (debug) {
       for (var ball in balls) {
-        canvas.drawCircle(Offset(ball!.pos.x.toDouble(), ball.pos.y.toDouble()),
-            ball.size, Paint()..color = Colors.black.withOpacity(0.5));
+        canvas.drawCircle(Offset(ball.pos.x.toDouble(), ball.pos.y.toDouble()),
+            ball.radius, Paint()..color = Colors.black.withOpacity(0.5));
       }
 
       matrix.forEach((_, item) => item.forEach((_, point) => canvas.drawCircle(

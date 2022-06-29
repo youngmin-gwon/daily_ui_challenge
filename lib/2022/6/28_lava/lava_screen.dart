@@ -12,9 +12,7 @@ class _LavaScreenState extends State<LavaScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  Lava lava = Lava(6);
-
-  List<Color> colors = [
+  static const List<Color> colors = [
     Color(0xfff857a6),
     Colors.blue,
     Colors.red,
@@ -26,6 +24,23 @@ class _LavaScreenState extends State<LavaScreen>
     Colors.cyan,
     Color(0xffff5858)
   ];
+
+  final tweenColors = TweenSequence<Color?>(colors
+      .asMap()
+      .map(
+        (index, color) => MapEntry(
+          index,
+          TweenSequenceItem(
+            weight: 1.0,
+            tween: ColorTween(
+              begin: color,
+              end: colors[index + 1 < colors.length ? index + 1 : 0],
+            ),
+          ),
+        ),
+      )
+      .values
+      .toList());
 
   @override
   void initState() {
@@ -44,6 +59,9 @@ class _LavaScreenState extends State<LavaScreen>
 
   @override
   Widget build(BuildContext context) {
+    print("lava");
+    final lava = Lava(6, MediaQuery.of(context).size);
+    lava.updateSize(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -53,12 +71,10 @@ class _LavaScreenState extends State<LavaScreen>
       body: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
+            final color = colors[0];
             return CustomPaint(
-              size: const Size(500, 500),
-              painter: LavaPainter(
-                lava: lava,
-                color: colors[0],
-              ),
+              size: Size.infinite,
+              painter: LavaPainter(color, lava),
             );
           }),
     );

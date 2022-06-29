@@ -1,20 +1,19 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-class ForcePoint<T extends num> {
+class ForcePoint {
   ForcePoint(this.x, this.y);
 
-  T x, y;
+  double x, y;
 
   num get magnitude => x * x + y * y;
 
   double computed = 0;
   double force = 0;
 
-  ForcePoint<num> add(ForcePoint<T> point) =>
-      ForcePoint(point.x + x, point.y + y);
+  ForcePoint add(ForcePoint point) => ForcePoint(point.x + x, point.y + y);
 
-  ForcePoint copyWith({T? x, T? y}) => ForcePoint(
+  ForcePoint copyWith({double? x, double? y}) => ForcePoint(
         x ?? this.x,
         y ?? this.y,
       );
@@ -23,14 +22,14 @@ class ForcePoint<T extends num> {
 class Ball {
   late ForcePoint velocity;
   late ForcePoint pos;
-  late double size;
+  late double radius;
 
-  Ball(Size newSize) {
-    double vel({double ratio = 1}) =>
+  Ball(Size size) {
+    double vel() =>
         (math.Random().nextDouble() > .5 ? 1 : -1) *
         (.2 + .25 * math.Random().nextDouble());
 
-    velocity = ForcePoint(vel(ratio: 0.25), vel());
+    velocity = ForcePoint(vel(), vel());
 
     var i = .1;
     var h = 1.5;
@@ -39,39 +38,38 @@ class Ball {
         math.Random().nextDouble() * fullSize;
 
     pos = ForcePoint(
-      calculatePosition(newSize.width),
-      calculatePosition(newSize.height),
+      calculatePosition(size.width),
+      calculatePosition(size.height),
     );
 
-    size = newSize.shortestSide / 15 +
-        (math.Random().nextDouble() * (h - i) + i) *
-            (newSize.shortestSide / 15);
+    radius = size.shortestSide / 15 +
+        (math.Random().nextDouble() * (h - i) + i) * (size.shortestSide / 15);
   }
 
-  moveIn(Size newSize) {
-    if (pos.x >= newSize.width - size) {
+  void moveIn(Size size) {
+    if (pos.x >= size.width - radius) {
       if (pos.x > 0) {
         velocity.x = -velocity.x;
       }
       pos = pos.copyWith(
-        x: newSize.width - size,
+        x: size.width - radius,
       );
-    } else if (pos.x <= size) {
+    } else if (pos.x <= radius) {
       if (velocity.x < 0) {
         velocity.x = -velocity.x;
       }
-      pos.x = size;
+      pos.x = radius;
     }
-    if (pos.y >= newSize.height - size) {
+    if (pos.y >= size.height - radius) {
       if (velocity.y > 0) {
         velocity.y = -velocity.y;
       }
-      pos.y = newSize.height - size;
-    } else if (pos.y <= size) {
+      pos.y = size.height - radius;
+    } else if (pos.y <= radius) {
       if (velocity.y < 0) {
         velocity.y = -velocity.y;
       }
-      pos.y = size;
+      pos.y = radius;
     }
     pos = pos.add(velocity);
   }
