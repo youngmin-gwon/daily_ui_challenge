@@ -185,16 +185,16 @@ class AprilScreen extends StatelessWidget {
                 child: const Text("29. Metaballs without package"),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const RawRgbaAnimationScreen(),
-                    ),
-                  );
-                },
-                child: const Text("30. Raw RGBA animation"),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) => const RawRgbaAnimationScreen(),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text("30. Raw RGBA animation"),
+              // ),
             ],
           ),
         ),

@@ -72,25 +72,40 @@ class _WavePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = Path();
-    path.moveTo(0, size.height);
-    var prevX = waveGroup.waves[0].points[0].x;
-    var prevY = waveGroup.waves[0].points[0].y;
-    path.lineTo(prevX, prevY);
-    for (var i = 1; i < waveGroup.waves[0].totalPoints; i++) {
-      final centerX = waveGroup.waves[0].points[i].x;
-      final centerY = waveGroup.waves[0].points[i].y;
+    // final path = Path();
+    // path.moveTo(0, size.height);
+    // var prevX = waveGroup.waves[0].points[0].x;
+    // var prevY = waveGroup.waves[0].points[0].y;
+    // path.lineTo(prevX, prevY);
+    // for (var i = 1; i < waveGroup.waves[0].totalPoints; i++) {
+    //   final centerX = waveGroup.waves[0].points[i].x;
+    //   final centerY = waveGroup.waves[0].points[i].y;
+
+    //   // canvas.drawCircle(Offset(centerX, centerY), 20, _dotPaint);
+
+    //   prevX = waveGroup.waves[0].points[i].x;
+    //   prevY = waveGroup.waves[0].points[i].y;
+    //   path.quadraticBezierTo(prevX, prevY, centerX, centerY);
+    // }
+    // path.lineTo(size.width, size.height);
+    // path.close();
+
+    // canvas.drawPath(path, Paint()..color = waveGroup.colors[0]);
+
+    for (var i = 0; i < waveGroup.waves.length; i++) {
+      final path = Path();
+      path.addPolygon(
+          waveGroup.waves[i].points.map((point) => point.offset).toList(),
+          false);
+
+      path.lineTo(size.width, size.height);
+      path.lineTo(0, size.height);
+      path.close();
 
       // canvas.drawCircle(Offset(centerX, centerY), 20, _dotPaint);
 
-      prevX = waveGroup.waves[0].points[i].x;
-      prevY = waveGroup.waves[0].points[i].y;
-      path.quadraticBezierTo(prevX, prevY, centerX, centerY);
+      canvas.drawPath(path, Paint()..color = waveGroup.colors[i]);
     }
-    path.lineTo(size.width, size.height);
-    path.close();
-
-    canvas.drawPath(path, Paint()..color = waveGroup.colors[0]);
   }
 
   @override
@@ -167,7 +182,12 @@ class Wave {
 
   void init() {
     for (var i = 0; i < totalPoints; i++) {
-      final point = Point(x: pointGap * i, y: centerY, index: i + 1);
+      final point = Point(
+          offset: Offset(
+            pointGap * i,
+            centerY,
+          ),
+          index: i + 1);
       points.add(point);
     }
   }
@@ -188,8 +208,7 @@ class Wave {
 }
 
 class Point {
-  double x;
-  double y;
+  Offset offset;
   double speed = 0.1;
 
   double cur = 0;
@@ -198,17 +217,16 @@ class Point {
   late double fixedY;
 
   Point({
-    required this.x,
-    required this.y,
+    required this.offset,
     required int index,
   }) {
-    fixedY = y;
+    fixedY = offset.dy;
     cur = index.toDouble();
     max = 120;
   }
 
   void update() {
     cur += speed;
-    y = fixedY + math.sin(cur) * max;
+    offset = Offset(offset.dx, fixedY + math.sin(cur) * max);
   }
 }
