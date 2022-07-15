@@ -175,9 +175,10 @@ class WavePainter extends CustomPainter {
     double maxSlideDifference = 20.0;
 
     double slideDifference = (sliderPosition - _previousSliderPosition).abs();
-    slideDifference = (sliderPosition > maxSlideDifference)
-        ? maxSlideDifference
-        : slideDifference;
+
+    if (slideDifference > maxSlideDifference) {
+      slideDifference = maxSlideDifference;
+    }
 
     double bend =
         lerpDouble(0.0, bendability, slideDifference / maxSlideDifference)!;
@@ -199,15 +200,13 @@ class WavePainter extends CustomPainter {
     }
 
     WaveCurveDefinitions waveCurve = WaveCurveDefinitions(
+      controlHeight: controlHeight,
       startOfBezier: startOfBezier,
       endOfBezier: endOfBezier,
-      startOfBend: startOfBend,
-      endOfBend: endOfBend,
       leftControlPoint1: leftControlPoint1,
       leftControlPoint2: leftControlPoint2,
       rightControlPoint1: rightControlPoint1,
       rightControlPoint2: rightControlPoint2,
-      controlHeight: controlHeight,
       centerPoint: centerPoint,
     );
 
@@ -222,8 +221,6 @@ class WavePainter extends CustomPainter {
 }
 
 class WaveCurveDefinitions {
-  final double startOfBend;
-  final double endOfBend;
   final double startOfBezier;
   final double endOfBezier;
   final double leftControlPoint1;
@@ -234,8 +231,6 @@ class WaveCurveDefinitions {
   final double centerPoint;
 
   WaveCurveDefinitions({
-    required this.startOfBend,
-    required this.endOfBend,
     required this.startOfBezier,
     required this.endOfBezier,
     required this.leftControlPoint1,
