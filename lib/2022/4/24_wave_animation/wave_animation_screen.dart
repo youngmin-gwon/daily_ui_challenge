@@ -72,40 +72,26 @@ class _WavePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // final path = Path();
-    // path.moveTo(0, size.height);
-    // var prevX = waveGroup.waves[0].points[0].x;
-    // var prevY = waveGroup.waves[0].points[0].y;
-    // path.lineTo(prevX, prevY);
-    // for (var i = 1; i < waveGroup.waves[0].totalPoints; i++) {
-    //   final centerX = waveGroup.waves[0].points[i].x;
-    //   final centerY = waveGroup.waves[0].points[i].y;
+    final path = Path();
+    path.moveTo(0, size.height);
+    var prevX = waveGroup.waves[0].points[0].offset.dx;
+    var prevY = waveGroup.waves[0].points[0].offset.dy;
+    path.lineTo(prevX, prevY);
+    for (var i = 1; i < waveGroup.waves[0].totalPoints; i++) {
+      final centerX = waveGroup.waves[0].points[i].offset.dx;
+      final centerY = waveGroup.waves[0].points[i].offset.dy;
 
-    //   // canvas.drawCircle(Offset(centerX, centerY), 20, _dotPaint);
+      prevX = waveGroup.waves[0].points[i - 1].offset.dx;
+      prevY = waveGroup.waves[0].points[i - 1].offset.dy;
 
-    //   prevX = waveGroup.waves[0].points[i].x;
-    //   prevY = waveGroup.waves[0].points[i].y;
-    //   path.quadraticBezierTo(prevX, prevY, centerX, centerY);
-    // }
-    // path.lineTo(size.width, size.height);
-    // path.close();
-
-    // canvas.drawPath(path, Paint()..color = waveGroup.colors[0]);
-
-    for (var i = 0; i < waveGroup.waves.length; i++) {
-      final path = Path();
-      path.addPolygon(
-          waveGroup.waves[i].points.map((point) => point.offset).toList(),
-          false);
-
-      path.lineTo(size.width, size.height);
-      path.lineTo(0, size.height);
-      path.close();
-
-      // canvas.drawCircle(Offset(centerX, centerY), 20, _dotPaint);
-
-      canvas.drawPath(path, Paint()..color = waveGroup.colors[i]);
+      canvas.drawCircle(Offset(centerX, centerY), 20, _dotPaint);
+      path.cubicTo((prevX + centerX) / 2, prevY, (prevX + centerX) / 2, centerY,
+          centerX, centerY);
     }
+    path.lineTo(size.width, size.height);
+    path.close();
+
+    canvas.drawPath(path, Paint()..color = waveGroup.colors[0]);
   }
 
   @override

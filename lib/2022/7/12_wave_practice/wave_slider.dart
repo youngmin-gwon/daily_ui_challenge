@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -126,11 +126,118 @@ class WavePainter extends CustomPainter {
         fillPaint);
   }
 
-  void _paintWaveLine(Canvas canvas, Size size) {}
+  void _paintWaveLine(Canvas canvas, Size size) {
+    final _waveCurve = _calculateWaveLineDefinitions(size);
+
+    final path = Path();
+    path.moveTo(0, size.height);
+    path.lineTo(_waveCurve.startOfBezier, size.height);
+    path.cubicTo(
+        _waveCurve.leftControlPoint1,
+        size.height,
+        _waveCurve.leftControlPoint2,
+        _waveCurve.controlHeight,
+        _waveCurve.centerPoint,
+        _waveCurve.controlHeight);
+    path.cubicTo(
+        _waveCurve.rightControlPoint1,
+        _waveCurve.controlHeight,
+        _waveCurve.rightControlPoint2,
+        size.height,
+        _waveCurve.endOfBezier,
+        size.height);
+    path.lineTo(size.width, size.height);
+
+    canvas.drawPath(path, linePaint);
+  }
 
   @override
   bool shouldRepaint(covariant WavePainter oldDelegate) {
     _previousSliderPosition = oldDelegate.sliderPosition;
     return true;
   }
+
+  WaveCurveDefinitions _calculateWaveLineDefinitions(Size size) {
+    double minRatio = 0.2;
+
+    double minWaveHeight = size.height * minRatio;
+    double maxWaveHeight = size.height * (1 - minRatio);
+
+    double controlHeight =
+        (size.height - minWaveHeight) - maxWaveHeight * dragPercentage;
+
+    double bendWidth = 20 + 20 * dragPercentage;
+    double bezierWidth = 20 + 20 * dragPercentage;
+
+    double centerPoint = sliderPosition;
+
+    double startOfBend = centerPoint - bendWidth / 2;
+    double startOfBezier = startOfBend - bezierWidth;
+    double endOfBend = centerPoint + bendWidth / 2;
+    double endOfBezier = endOfBend + bezierWidth;
+
+    startOfBend = startOfBend <= 0.0 ? 0.0 : startOfBend;
+    startOfBezier = startOfBezier <= 0.0 ? 0.0 : startOfBezier;
+    endOfBend = endOfBend >= size.width ? size.width : endOfBend;
+    endOfBezier = endOfBezier >= size.width ? size.width : endOfBezier;
+
+    double leftControlPoint1 = startOfBend;
+    double leftControlPoint2 = startOfBend;
+    double rightControlPoint1 = endOfBend;
+    double rightControlPoint2 = endOfBend;
+
+    double bendability = 25.0;
+    double maxDifference = 20.0;
+
+    double slideDifference = (sliderPosition - _previousSliderPosition).abs();
+
+    if (slideDifference > maxDifference) {
+      slideDifference = maxDifference;
+    }
+
+    int moveLeft = sliderPosition < _previousSliderPosition ? 1 : -1;
+
+    double bend =
+        ui.lerpDouble(0, bendability, slideDifference / maxDifference)! *
+            moveLeft;
+
+    leftControlPoint1 = leftControlPoint1 - bend;
+    leftControlPoint2 = leftControlPoint2 + bend;
+    rightControlPoint1 = rightControlPoint1 + bend;
+    rightControlPoint2 = rightControlPoint2 - bend;
+    centerPoint = centerPoint + bend;
+
+    return WaveCurveDefinitions(
+      centerPoint: centerPoint,
+      startOfBezier: startOfBezier,
+      endOfBezier: endOfBezier,
+      leftControlPoint1: leftControlPoint1,
+      leftControlPoint2: leftControlPoint2,
+      rightControlPoint1: rightControlPoint1,
+      rightControlPoint2: rightControlPoint2,
+      controlHeight: controlHeight,
+    );
+  }
+}
+
+class WaveCurveDefinitions {
+  final double centerPoint;
+  final double startOfBezier;
+  final double endOfBezier;
+  final double leftControlPoint1;
+  final double leftControlPoint2;
+  final double rightControlPoint1;
+  final double rightControlPoint2;
+  final double controlHeight;
+
+  const WaveCurveDefinitions({
+    required this.centerPoint,
+    required this.startOfBezier,
+    required this.endOfBezier,
+    required this.leftControlPoint1,
+    required this.leftControlPoint2,
+    required this.rightControlPoint1,
+    required this.rightControlPoint2,
+    required this.controlHeight,
+  });
 }
