@@ -18,23 +18,42 @@ class WaveSlider extends StatefulWidget {
   State<WaveSlider> createState() => _WaveSliderState();
 }
 
-class _WaveSliderState extends State<WaveSlider> {
+class _WaveSliderState extends State<WaveSlider>
+    with SingleTickerProviderStateMixin {
+  late WaveSliderController _sliderController;
+
   double _dragPosition = 0;
   double _dragPercentage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _sliderController = WaveSliderController(vsync: this)
+      ..addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _sliderController.dispose();
+    super.dispose();
+  }
 
   void _onPanStart(DragStartDetails details) {
     final box = context.findRenderObject() as RenderBox;
     final offset = box.globalToLocal(details.globalPosition);
+    _sliderController.setStateToStart();
     _updateDragPosition(offset);
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
     final box = context.findRenderObject() as RenderBox;
     final offset = box.globalToLocal(details.globalPosition);
+    _sliderController.setStateToSliding();
     _updateDragPosition(offset);
   }
 
   void _onPanEnd(DragEndDetails details) {
+    _sliderController.setStateToStopping();
     setState(() {});
   }
 
@@ -69,6 +88,8 @@ class _WaveSliderState extends State<WaveSlider> {
             sliderPosition: _dragPosition,
             dragPercentage: _dragPercentage,
             color: widget.color,
+            animationProgress: _sliderController.progress,
+            sliderState: _sliderController.state,
           ),
         ),
       ),
@@ -80,6 +101,8 @@ class WavePainter extends CustomPainter {
   final double sliderPosition;
   final double dragPercentage;
   final Color color;
+  final double animationProgress;
+  final SliderState sliderState;
 
   double _previousSliderPosition = 0;
 
@@ -90,6 +113,8 @@ class WavePainter extends CustomPainter {
     required this.sliderPosition,
     required this.dragPercentage,
     required this.color,
+    required this.animationProgress,
+    required this.sliderState,
   })  : fillPaint = Paint()
           ..color = color
           ..style = PaintingStyle.fill,
@@ -103,7 +128,60 @@ class WavePainter extends CustomPainter {
     _paintAnchor(canvas, size);
     // _paintLine(canvas, size);
     // _paintBlock(canvas, size);
-    _paintWaveLine(canvas, size);
+    // _paintWaveLine(canvas, size);
+
+    switch (sliderState) {
+      case SliderState.starting:
+        _paintStartupWave(canvas, size);
+        break;
+      case SliderState.resting:
+        _paintRestingWave(canvas, size);
+        break;
+      case SliderState.sliding:
+        _paintSlidingWave(canvas, size);
+        break;
+      case SliderState.stopping:
+        _paintStoppingWave(canvas, size);
+        break;
+      default:
+        _paintRestingWave(canvas, size);
+        break;
+    }
+  }
+
+  void _paintStartupWave(Canvas canvas, Size size) {
+    WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
+
+    double waveHeight = ui.lerpDouble(size.height, line.controlHeight,
+        Curves.elasticOut.transform(animationProgress))!;
+
+    line.controlHeight = waveHeight;
+
+    _paintWaveLine(canvas, size, line);
+  }
+
+  void _paintStoppingWave(Canvas canvas, Size size) {
+    WaveCurveDefinitions line = _calculateWaveLineDefinitions(size);
+
+    double waveHeight = ui.lerpDouble(line.controlHeight, size.height,
+        Curves.elasticOut.transform(animationProgress))!;
+
+    line.controlHeight = waveHeight;
+
+    _paintWaveLine(canvas, size, line);
+  }
+
+  void _paintRestingWave(Canvas canvas, Size size) {
+    final path = Path();
+    path.moveTo(0, size.height);
+    path.lineTo(size.width, size.height);
+
+    canvas.drawPath(path, linePaint);
+  }
+
+  void _paintSlidingWave(Canvas canvas, Size size) {
+    final curveDefinitions = _calculateWaveLineDefinitions(size);
+    _paintWaveLine(canvas, size, curveDefinitions);
   }
 
   void _paintAnchor(Canvas canvas, Size size) {
@@ -126,25 +204,24 @@ class WavePainter extends CustomPainter {
         fillPaint);
   }
 
-  void _paintWaveLine(Canvas canvas, Size size) {
-    final _waveCurve = _calculateWaveLineDefinitions(size);
-
+  void _paintWaveLine(
+      Canvas canvas, Size size, WaveCurveDefinitions waveCurve) {
     final path = Path();
     path.moveTo(0, size.height);
-    path.lineTo(_waveCurve.startOfBezier, size.height);
+    path.lineTo(waveCurve.startOfBezier, size.height);
     path.cubicTo(
-        _waveCurve.leftControlPoint1,
+        waveCurve.leftControlPoint1,
         size.height,
-        _waveCurve.leftControlPoint2,
-        _waveCurve.controlHeight,
-        _waveCurve.centerPoint,
-        _waveCurve.controlHeight);
+        waveCurve.leftControlPoint2,
+        waveCurve.controlHeight,
+        waveCurve.centerPoint,
+        waveCurve.controlHeight);
     path.cubicTo(
-        _waveCurve.rightControlPoint1,
-        _waveCurve.controlHeight,
-        _waveCurve.rightControlPoint2,
+        waveCurve.rightControlPoint1,
+        waveCurve.controlHeight,
+        waveCurve.rightControlPoint2,
         size.height,
-        _waveCurve.endOfBezier,
+        waveCurve.endOfBezier,
         size.height);
     path.lineTo(size.width, size.height);
 
@@ -228,9 +305,9 @@ class WaveCurveDefinitions {
   final double leftControlPoint2;
   final double rightControlPoint1;
   final double rightControlPoint2;
-  final double controlHeight;
+  double controlHeight;
 
-  const WaveCurveDefinitions({
+  WaveCurveDefinitions({
     required this.centerPoint,
     required this.startOfBezier,
     required this.endOfBezier,
@@ -240,4 +317,80 @@ class WaveCurveDefinitions {
     required this.rightControlPoint2,
     required this.controlHeight,
   });
+}
+
+class WaveSliderController with ChangeNotifier {
+  late AnimationController controller;
+  SliderState _state = SliderState.resting;
+
+  WaveSliderController({required TickerProvider vsync})
+      : controller = AnimationController(
+          vsync: vsync,
+          duration: const Duration(milliseconds: 500),
+        ) {
+    controller
+      ..addListener(_onProgressUpdate)
+      ..addStatusListener(_onStatusUpdate);
+  }
+
+  double get progress => controller.value;
+
+  SliderState get state => _state;
+
+  void _onProgressUpdate() {
+    notifyListeners();
+  }
+
+  void _onStatusUpdate(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _onTransitionCompleted();
+    }
+  }
+
+  void _onTransitionCompleted() {
+    switch (_state) {
+      case SliderState.starting:
+        // TODO: Handle this case.
+        break;
+      case SliderState.resting:
+        // TODO: Handle this case.
+        break;
+      case SliderState.sliding:
+        // TODO: Handle this case.
+        break;
+      case SliderState.stopping:
+        setStateToResting();
+        break;
+    }
+  }
+
+  void _startAnimation() {
+    controller.forward(from: 0.0);
+    notifyListeners();
+  }
+
+  void setStateToResting() {
+    _state = SliderState.resting;
+  }
+
+  void setStateToStart() {
+    _startAnimation();
+    _state = SliderState.starting;
+  }
+
+  void setStateToSliding() {
+    _state = SliderState.sliding;
+  }
+
+  void setStateToStopping() {
+    _startAnimation();
+    _state = SliderState.stopping;
+  }
+}
+
+enum SliderState {
+  starting,
+  resting,
+  sliding,
+  stopping,
 }
