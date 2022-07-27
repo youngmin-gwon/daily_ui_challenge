@@ -1,5 +1,6 @@
 import 'package:daily_ui/2022/7/12_wave_practice/wave_gesture_screen.dart';
 import 'package:daily_ui/2022/7/13_wave_practice2/wave_practice2_screen.dart';
+import 'package:daily_ui/2022/7/27_disk_animation/disk_counter_screen.dart';
 import 'package:daily_ui/2022/7/4_wave_counter/wave_counter_screen.dart';
 import 'package:daily_ui/2022/7/5_portrait_counter/portrait_counter_screen.dart';
 import 'package:daily_ui/2022/7/6_bubble_rotating_counter/bubble_rotating_counter_screen.dart';
@@ -70,6 +71,17 @@ class JulyScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("20. Wave Practice Again"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const DiskCounterScreen(),
+                    ),
+                  );
+                },
+                child: const Text("27. Disk Counter"),
               ),
             ],
           ),
