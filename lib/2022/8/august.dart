@@ -4,6 +4,7 @@ import 'package:daily_ui/2022/7/27_disk_animation/disk_counter_screen.dart';
 import 'package:daily_ui/2022/7/4_wave_counter/wave_counter_screen.dart';
 import 'package:daily_ui/2022/7/5_portrait_counter/portrait_counter_screen.dart';
 import 'package:daily_ui/2022/7/6_bubble_rotating_counter/bubble_rotating_counter_screen.dart';
+import 'package:daily_ui/2022/8/10_creature_counter_animation/creature_counter_screen.dart';
 import 'package:daily_ui/2022/8/8_circle_wave/circle_wave_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,17 @@ class AugustScreen extends StatelessWidget {
                   );
                 },
                 child: const Text("8. Circle Wave Animation"),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CreatureCounterScreen(),
+                    ),
+                  );
+                },
+                child: const Text("10. Creature Counter Animation"),
               ),
             ],
           ),
