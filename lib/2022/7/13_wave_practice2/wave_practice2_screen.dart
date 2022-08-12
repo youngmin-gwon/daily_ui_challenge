@@ -12,7 +12,7 @@ class _WavePractice2ScreenState extends State<WavePractice2Screen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  double radius = 300;
+  double radius = 200;
 
   Offset pickPoint = const Offset(0, 100);
 
@@ -31,25 +31,22 @@ class _WavePractice2ScreenState extends State<WavePractice2Screen>
     super.dispose();
   }
 
-  void _onPanStart(DragStartDetails details) {
-    final box = context.findRenderObject() as RenderBox;
-    final offset = box.localToGlobal(details.localPosition);
-
+  void _onScaleStart(ScaleStartDetails details) {
     setState(() {
-      pickPoint = offset;
+      pickPoint = details.localFocalPoint;
     });
   }
 
-  void _onPanUpdate(DragUpdateDetails details) {
-    final box = context.findRenderObject() as RenderBox;
-    final offset = box.localToGlobal(details.localPosition);
-
-    setState(() {
-      pickPoint = offset;
-    });
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    if (details.localFocalPoint.dx >= 0 &&
+        details.localFocalPoint.dx <= radius * 2) {
+      setState(() {
+        pickPoint = details.localFocalPoint;
+      });
+    }
   }
 
-  void _onPanEnd(DragEndDetails details) {
+  void _onScaleEnd(ScaleEndDetails details) {
     setState(() {});
   }
 
@@ -61,33 +58,31 @@ class _WavePractice2ScreenState extends State<WavePractice2Screen>
       body: Stack(
         children: [
           Center(
-            child: ClipPath(
-              clipper: HoleClipper(),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: GestureDetector(
-                  onPanStart: _onPanStart,
-                  onPanUpdate: _onPanUpdate,
-                  onPanEnd: _onPanEnd,
-                  child: Container(
-                    width: radius,
-                    height: radius,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: CustomPaint(
-                      size: Size.infinite,
-                      painter: Wave2Painter(
-                        pickPoint: pickPoint,
-                      ),
+              child: ClipPath(
+            clipper: HoleClipper(),
+            child: Container(
+              width: radius * 2,
+              height: radius * 2,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: GestureDetector(
+                onScaleStart: _onScaleStart,
+                onScaleUpdate: _onScaleUpdate,
+                onScaleEnd: _onScaleEnd,
+                child: SizedBox(
+                  width: radius,
+                  height: radius,
+                  child: CustomPaint(
+                    size: Size(radius, radius),
+                    painter: Wave2Painter(
+                      pickPoint: pickPoint,
                     ),
                   ),
                 ),
               ),
             ),
-          ),
+          )),
         ],
       ),
     );
@@ -180,9 +175,10 @@ class HoleClipper extends CustomClipper<Path> {
 
     path.addArc(
       Rect.fromCenter(
-          center: Offset(size.width / 2, size.height / 2),
-          width: size.width,
-          height: size.height),
+        center: Offset(size.width / 2, size.height / 2),
+        width: size.width,
+        height: size.height,
+      ),
       0,
       2 * math.pi,
     );
