@@ -94,16 +94,16 @@ class JuneScreen extends StatelessWidget {
                 },
                 child: const Text("19. Magnifier Effect"),
               ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const BezierScreen()),
-                  );
-                },
-                child: const Text("20. Bezier Animation"),
-              ),
+              // const SizedBox(height: 12),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //           builder: (context) => const BezierScreen()),
+              //     );
+              //   },
+              //   child: const Text("20. Bezier Animation"),
+              // ),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
@@ -124,15 +124,15 @@ class JuneScreen extends StatelessWidget {
                 },
                 child: const Text("27. Particle Counter Animation"),
               ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const LavaScreen()),
-                  );
-                },
-                child: const Text("28. Lava Animation"),
-              ),
+              // const SizedBox(height: 12),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(builder: (context) => const LavaScreen()),
+              //     );
+              //   },
+              //   child: const Text("28. Lava Animation"),
+              // ),
             ],
           ),
         ),
