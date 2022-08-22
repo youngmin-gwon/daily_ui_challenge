@@ -45,17 +45,17 @@ class AugustScreen extends StatelessWidget {
                 },
                 child: const Text("10. Creature Counter Animation"),
               ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SlimePracticeScreen(),
-                    ),
-                  );
-                },
-                child: const Text("15. Metaball Experiment"),
-              ),
+              // const SizedBox(height: 12),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).push(
+              //       MaterialPageRoute(
+              //         builder: (context) => const SlimePracticeScreen(),
+              //       ),
+              //     );
+              //   },
+              //   child: const Text("15. Metaball Experiment"),
+              // ),
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
