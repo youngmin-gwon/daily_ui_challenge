@@ -12,7 +12,7 @@ class _Screen20211215State extends State<Screen20211215>
   late AnimationController _controller;
 
   final GlobalKey _key = GlobalKey();
-  Offset _offset = Offset(0, 0);
+  final _offset = const Offset(0, 0);
 
   @override
   void initState() {
@@ -20,6 +20,12 @@ class _Screen20211215State extends State<Screen20211215>
     _controller = AnimationController(
       vsync: this,
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _getCanvasOffsetFromWidget() {
